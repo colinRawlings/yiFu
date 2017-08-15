@@ -4,20 +4,25 @@
 #define _LENS_COMPONENT_H
 
 #include "Arduino.h"
-
-
-
+#include "HWdefs.h"
+#include "lensInterface.h"
+#include "UI.h"
 
 class lensComponent
 {
-    private:
+private:
 
-    protected:
-      _sendFastByte();
-      _sendSlowByte();
-      _displayMessage();
 
-    public
+protected:
+  lensInterface *theLens;
+  bool verboseMode:
+
+protected:
+
+
+public:
+  lensComponent(lensInterface *theLens_, UI *theUI_);
+
 };
 
 #endif

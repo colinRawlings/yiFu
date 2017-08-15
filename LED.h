@@ -30,7 +30,6 @@ public:
   void toggle();
 
   LEDState getState();
-
 };
 
 #endif //_LED_H

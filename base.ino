@@ -1,25 +1,22 @@
 #include "HWdefs.h"
-#include "persistentLED.h"
-#include "pushSwitch.h"
+#include "lensInterface.h"
 
 #include "Arduino.h"
 
-persistentLED *errorLED = new persistentLED(LED_PIN, false,2e6);
-pushSwitch *theInput = new pushSwitch(SWITCH_PIN, true);
+lensInterface theLens = lensInterface(MOSI_BIT, MISO_BIT, CLK_BIT);
 
 void setup()
 {
+    Serial.begin(115200);
+
+    theLens.setSerialPort(&Serial);
 }
 
 void loop()
 {
-    if(theInput->getState()==PRESSED)
-        errorLED->activate();
-
-    performUpdates();
+    theLens.sayHi();
 }
 
 void performUpdates()
 {
-    errorLED->update();
 }
