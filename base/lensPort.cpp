@@ -267,6 +267,14 @@ errorCodes lensPort::getMsgLength(unsigned int &msgLength_)
 }
 
 //-----------------------------------------------------------------
+errorCodes lensPort::getMsgSpeed(msgSpeed &speed_)
+{
+    speed_ = speed;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
 errorCodes lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
 {
     if (!msgAvailable)
@@ -292,6 +300,7 @@ errorCodes lensPort::sendSlowMsg()
     }
 
     msgAvailable = true;
+    speed = SLOW;
 
     return SUCCESS;
 }
@@ -308,6 +317,7 @@ errorCodes lensPort::sendFastMsg()
     }
 
     msgAvailable = true;
+    speed = FAST;
 
     return SUCCESS;
 }

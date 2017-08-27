@@ -35,16 +35,19 @@ private:
 private:
   int _writeHexSequenceToSerial(uint8_t sequence[], unsigned int msgLength);
   void _printErrorCode(errorCodes theErrorCode);
+  void _addHrule();
 
 public:
   UI(bool echoOn_);
 
-  void setLensManager(lensManagerInterface *theLens_);
+  void setLensManager(lensManagerInterface *the_lens_manager_);
   void setSerialPort(Stream *the_serial_port_);
 
   void reportError(errorCodes theErrorCode);
   void displayStartupError();
   void displayEndStop();
+
+  void reportFocalLengths();
 
   void displayNotReady();
   void displayReady();

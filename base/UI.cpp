@@ -144,11 +144,37 @@ int UI::_writeHexSequenceToSerial(uint8_t sequence[], unsigned int length)
 }
 
 //-----------------------------------------------------------------
+void UI::_addHrule()
+{
+    the_serial_port->println("-------------------------------------");
+}
+
+//-----------------------------------------------------------------
+void UI::reportFocalLengths()
+{
+    int FLmin_mm;
+    int FLmax_mm;
+
+    the_lens_manager->getLensFocalLengths(FLmin_mm, FLmax_mm);
+
+    _addHrule();
+
+    the_serial_port->print("Focal Length range: min=");
+    the_serial_port->print(FLmin_mm);
+    the_serial_port->print("mm, max=");
+    the_serial_port->print(FLmax_mm);
+    the_serial_port->println("mm");
+
+    _addHrule();
+}
+
+//-----------------------------------------------------------------
 errorCodes UI::displayLensConversation()
 {
     // TDOD check serial port is open
     uint8_t msgBuffer[MSG_BUFFER_LENGTH];
     unsigned int msgLength;
+    msgSpeed speed;
 
     lensPortInterface *the_lens_port = the_lens_manager->getLensPort();
 
@@ -163,7 +189,7 @@ errorCodes UI::displayLensConversation()
 
     //
 
-    the_serial_port->println("----------------");
+    _addHrule();
     the_serial_port->print("->the_lens_port: ");
 
     _writeHexSequenceToSerial(msgBuffer, msgLength);
@@ -178,7 +204,18 @@ errorCodes UI::displayLensConversation()
     if (errorCodes err = _writeHexSequenceToSerial(msgBuffer, msgLength))
         return err;
 
-    the_serial_port->println("----------------");
+    if (errorCodes err = the_lens_port->getMsgSpeed(speed))
+        return err;
+
+    switch (speed)
+    {
+    case SLOW:
+        the_serial_port->println("(slow mode)");
+    case FAST:
+        the_serial_port->println("(fast mode)");
+    }
+
+    _addHrule();
 
     //
 

@@ -20,6 +20,7 @@ public:
   virtual void displayReady();
 
   virtual errorCodes displayLensConversation() = 0;
+  virtual void reportFocalLengths() = 0;
 
   virtual void update();
 };

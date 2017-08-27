@@ -25,6 +25,7 @@ private:
 
   unsigned int msgLength;
   bool msgAvailable;
+  msgSpeed speed;
 
   // debug
 
@@ -40,12 +41,14 @@ private:
 
 protected:
 public:
-  errorCodes sendFastMsg();
-  errorCodes sendSlowMsg();
-
   lensPort();
 
   errorCodes setMsg(uint8_t msg[], unsigned int msgLength_);
+
+  errorCodes sendFastMsg();
+  errorCodes sendSlowMsg();
+
+  errorCodes getMsgSpeed(msgSpeed &speed);
   errorCodes getMsgLength(unsigned int &msgLength_);
   errorCodes getMsg(uint8_t msg[], unsigned int &msgLength_);
   errorCodes getAnswer(uint8_t answer[], unsigned int &answerLength_);

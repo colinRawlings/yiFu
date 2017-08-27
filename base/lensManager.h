@@ -17,29 +17,36 @@ class lensPortInterface;
 
 class lensManager : public lensManagerInterface
 {
-  private:
-    UIInterface *the_ui;
-    lensPort the_lens_port;
+private:
+  UIInterface *the_ui;
+  lensPort the_lens_port;
 
-    int FD_plus;
-    int FD_minus;
+  int FD_plus;
+  int FD_minus;
 
-  private:
-    void _initPower();
-    void _turnOnPower();
-    void _turnOffPower();
+  int FLmin_mm; // surrogate for lens ID
+  int FLmax_mm;
 
-    errorCodes _sendCR(bool fastMode);
+private:
+  void _initPower();
+  void _turnOnPower();
+  void _turnOffPower();
 
-  public:
-    // byte conversion functions
+  errorCodes _activateLens();
+  errorCodes _sendCR(msgSpeed speed);
 
-  public:
-    lensManager();
-    void setUI(UIInterface *ui_);
-    errorCodes initLens();
+  void _reportFL();
 
-    lensPortInterface *getLensPort();
+public:
+  // byte conversion functions
+
+public:
+  lensManager();
+  void setUI(UIInterface *ui_);
+  errorCodes initLens();
+
+  void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm);
+  lensPortInterface *getLensPort();
 };
 
 #endif // _LENS_MANAGER_H
