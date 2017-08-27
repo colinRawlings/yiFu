@@ -2,7 +2,7 @@
 
 //-----------------------------------------------------------------
 persistentLED::persistentLED(uint8_t pin_, bool invertedOutput_, long activatedDuration_us_)
-: LED(pin_, invertedOutput_)
+    : LED(pin_, invertedOutput_)
 {
     activatedDuration_us = activatedDuration_us_;
 }

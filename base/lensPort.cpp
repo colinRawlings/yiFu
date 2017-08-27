@@ -1,16 +1,7 @@
-#include "lensInterface.h"
+#include "lensPort.h"
 
-//-----------------------------------------------------------------
-// constants
-//-----------------------------------------------------------------
-
-#define delayBetweenSlowBytes_us 120
-#define delayBetweenFastBytes_us 10
-
-#define SPI_OUTPORT PORTB
-#define SPI_INPORT PINB
-#define SPI_DIR DDRB
-#define LPOW_PORT PORTB
+#include "HWdefs.h"
+#include "SWdefs.h"
 
 //-----------------------------------------------------------------
 // macros
@@ -31,16 +22,10 @@
 //-----------------------------------------------------------------
 // class methods
 //-----------------------------------------------------------------
-lensInterface::lensInterface(uint8_t MOSI_bit_, uint8_t MISO_bit_, uint8_t CLK_bit_)
+lensPort::lensPort()
 {
-    MOSI_bit = MOSI_bit_;
-    MISO_bit = MISO_bit_;
-    CLK_bit = CLK_bit_;
-
-    //
-
-    CLK_byte = (1 << CLK_bit);
-    MOSI_byte = (1 << MOSI_bit);
+    CLK_byte = (1 << CLK_BIT);
+    MOSI_byte = (1 << MOSI_BIT);
 
     //
 
@@ -49,7 +34,7 @@ lensInterface::lensInterface(uint8_t MOSI_bit_, uint8_t MISO_bit_, uint8_t CLK_b
 }
 
 //-----------------------------------------------------------------
-int lensInterface::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t *val_MISO)
+errorCodes lensPort::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
 {
     /* send bytes with a 6us clock half duration.*/
 
@@ -57,8 +42,9 @@ int lensInterface::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t *val_MISO)
     int SPI_outBits[8];
     uint8_t SPI_inBytes[8];
 
-    //--- tuning variables
-    unsigned long timeout_us = 30000;
+    val_MISO = 0x00;
+
+    //--- timing variables
     int N_nop_lo = 19; // done with a for loop so not 62.5ns/nop
     int N_nop_hi = 16;
     int N_nop_post = 3;
@@ -102,21 +88,98 @@ int lensInterface::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t *val_MISO)
 
     SPI_OUTPORT = (SPI_OUTPORT) | MOSI_byte; // put MOSI high again
 
-    if (int err = _waitForLens(timeout_us))
+    if (errorCodes err = _waitForLens(DT_LENS_TIMEOUT_US))
         return err;
 
     //--- calc val_MISO
     uint8_t val_tmp_MISO = 0x00;
 
     for (int i = 0; i < 8; i++)
-        val_tmp_MISO = (val_tmp_MISO << 1) | ((SPI_inBytes[i] >> MISO_bit) & 0x01);
-    val_MISO = &val_tmp_MISO;
+        val_tmp_MISO = (val_tmp_MISO << 1) | ((SPI_inBytes[i] >> MISO_BIT) & 0x01);
+    val_MISO = val_tmp_MISO;
 
-    return 0;
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensPort::_sendFastByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
+{
+    /* send bytes with a 0.5us clock half duration.*/
+
+    // --- variables
+    int SPI_outBits[8];
+    uint8_t SPI_inBytes[8];
+
+    val_MISO = 0x00;
+
+    //--- calculate theByte (do some pre-calculation for speed)
+    for (int i = 0; i < 8; i++)
+    {
+        SPI_outBits[i] = (val_tmp_MOSI & 0x80) >> 7;
+        val_tmp_MOSI = val_tmp_MOSI << 1;
+    }
+
+    //--- ensure correct o/p state for CLK
+    clkHigh(); //clock should be high already
+    clkOut();
+
+    //--- begin serial transmission
+    noInterrupts();
+
+    for (int i = 0; i < 8; i++)
+    {
+
+        //set clock and output bits
+        if (SPI_outBits[i] == 1)
+            MOSI_High();
+        else
+            MOSI_Low();
+
+        // set clock half period
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+        NOP;
+
+        // now do read portion of bit: this will be retained while next state is calculated
+        clkHigh();
+        SPI_inBytes[i] = SPI_INPORT; //start writing and shifting the input bits leftwards (MSB first)
+    }
+
+    // get ready for ack
+    clkIn(); //convert to an input (n.b. pulled up so we can do this early)
+    NOP;
+    NOP;
+    NOP;
+    NOP;
+    NOP;
+    SPI_OUTPORT = (SPI_OUTPORT) | MOSI_byte; // put MOSI high again
+
+    if (errorCodes err = _waitForLens(DT_LENS_TIMEOUT_US))
+        return err;
+
+    //--- calc val_MISO
+    uint8_t val_tmp_MISO = 0x00;
+
+    for (int i = 0; i < 8; i++)
+        val_tmp_MISO = (val_tmp_MISO << 1) | ((SPI_inBytes[i] >> MISO_BIT) & 0x01);
+    val_MISO = val_tmp_MISO;
+
+    return SUCCESS;
 }
 
 //-----------------------------------------------------
-int lensInterface::_waitForLens(unsigned long timeout_us)
+errorCodes lensPort::_waitForLens(unsigned long timeout_us)
 {
 
     unsigned long T0; // timer value when ACK sequence started
@@ -134,9 +197,9 @@ int lensInterface::_waitForLens(unsigned long timeout_us)
     {
         T1 = micros(); // this just wastes time, interrupts are still off
         if (N1_iter < n_iter)
-            timed_out = true;
+            return LENS_PORT_CLK_PULL_DOWN_TIMEOUT;
 
-        n_iter += 1;
+        n_iter++;
     }
 
     interrupts();  // now can re-enable the interrupts no risk of missing release as this is the steady state
@@ -154,19 +217,20 @@ int lensInterface::_waitForLens(unsigned long timeout_us)
 
     } while (!timed_out && !clockIsHigh());
 
-    // if (timed_out == true) DEBUG
-    //     return 1;
+    if (timed_out == true)
+        return LENS_PORT_CLK_RELEASE_TIMEOUT;
 
-    return 0;
+    return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-int lensInterface::setMsg(uint8_t msg[], unsigned int msgLength_)
+errorCodes lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
 {
     msgAvailable = false;
+    msgLength = 0;
 
     if (msgLength > SPI_BUFFER_LENGTH)
-        return 1;
+        return LENS_PORT_SPI_BUFFER_TOO_SMALL;
 
     msgLength = msgLength_;
 
@@ -176,75 +240,69 @@ int lensInterface::setMsg(uint8_t msg[], unsigned int msgLength_)
         SPI_MISO_buffer[p] = 0x00;
     }
 
-    return 0;
+    return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-int lensInterface::getAnswer(uint8_t answer[], unsigned int &answerLength)
+errorCodes lensPort::getMsg(uint8_t msg[], unsigned int &msgLength_)
+{
+
+    for (unsigned int p; p < msgLength; p++)
+        msg[p] = SPI_MISO_buffer[p];
+
+    msgLength_ = msgLength;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensPort::getMsgLength(unsigned int &msgLength_)
+{
+    msgLength_ = msgLength;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
 {
     if (!msgAvailable)
-        return 1;
+        return LENS_PORT_NO_ANSWER_AVAILABLE;
 
     for (unsigned int p; p < msgLength; p++)
         answer[p] = SPI_MISO_buffer[p];
 
-    return 0;
+    return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-int lensInterface::sendSlowMsg()
+errorCodes lensPort::sendSlowMsg()
 {
     for (unsigned int i = 0; i < msgLength; i++)
     {
-        if (int err = _sendSlowByte(SPI_MOSI_buffer[i], &SPI_MISO_buffer[i]))
+        if (int err = _sendSlowByte(SPI_MOSI_buffer[i], SPI_MISO_buffer[i]))
             return err;
 
-        delayMicroseconds(delayBetweenSlowBytes_us);
+        delayMicroseconds(DT_BETWEEN_SLOW_BYTES_US);
     }
 
     msgAvailable = true;
 
-    return 0;
+    return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-// debug methods (mostly move to UI)
-//-----------------------------------------------------------------
-lensInterface::setSerialPort(Stream *theSerialPort_)
+errorCodes lensPort::sendFastMsg()
 {
-    theSerialPort = theSerialPort_;
-
-    //
-
-    theSerialPort->println("lensInterface added the serial port");
-}
-
-//-----------------------------------------------------------------
-void lensInterface::sayHi()
-{
-    theSerialPort->println("Hello");
-
-    unsigned int CRlength = 3;
-    uint8_t CRsequence[] = {0x00, 0x0A, 0x00};
-    uint8_t CRresponse[CRlength];
-
-    //
-
-    if (int err = setMsg(CRsequence, CRlength))
-        theSerialPort->println("failed to set msg");
-
-    if (int err = sendSlowMsg())
-        theSerialPort->println("failed to send msg");
-
-    if (int err = getAnswer(CRresponse, CRlength))
-        theSerialPort->println("failed to get answer");
-
-    //
-
-    for (unsigned int p; p < CRlength; p++)
+    for (unsigned int i = 0; i < msgLength; i++)
     {
-        Serial.print(CRresponse[p]);
-        Serial.print(",");
+        if (int err = _sendFastByte(SPI_MOSI_buffer[i], SPI_MISO_buffer[i]))
+            return err;
+
+        delayMicroseconds(DT_BETWEEN_FAST_BYTES_US);
     }
-    Serial.println(".");
+
+    msgAvailable = true;
+
+    return SUCCESS;
 }
