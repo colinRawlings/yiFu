@@ -13,7 +13,9 @@ enum errorCodes
     LENS_PORT_NO_ANSWER_AVAILABLE,
 
     LENS_MAN_BAD_CR_LENGTH,
-    LENS_MAN_BAD_CR_RESPONSE
+    LENS_MAN_BAD_CR_RESPONSE,
+
+    UI_MSG_BUFFER_EMPTY
 };
 
 String errorCodeToString(errorCodes theErrorCode);

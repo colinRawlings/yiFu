@@ -34,6 +34,7 @@ private:
 
 private:
   int _writeHexSequenceToSerial(uint8_t sequence[], unsigned int msgLength);
+  void _printErrorCode(errorCodes theErrorCode);
 
 public:
   UI(bool echoOn_);
@@ -41,14 +42,14 @@ public:
   void setLensManager(lensManagerInterface *theLens_);
   void setSerialPort(Stream *the_serial_port_);
 
-  void reportError(errorCodes);
+  void reportError(errorCodes theErrorCode);
   void displayStartupError();
   void displayEndStop();
 
   void displayNotReady();
   void displayReady();
 
-  int displayLensConversation();
+  errorCodes displayLensConversation();
 
   void update();
 };

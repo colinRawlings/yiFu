@@ -8,20 +8,20 @@ class lensManagerInterface;
 
 class UIInterface
 {
-  public:
-    virtual void setLensManager(lensManagerInterface *theLens_) = 0;
-    virtual void setSerialPort(Stream *theSerialPort_) = 0;
+public:
+  virtual void setLensManager(lensManagerInterface *theLens_) = 0;
+  virtual void setSerialPort(Stream *theSerialPort_) = 0;
 
-    virtual void reportError(errorCodes theErrorCode);
-    virtual void displayStartupError();
-    virtual void displayEndStop();
+  virtual void reportError(errorCodes theErrorCode);
+  virtual void displayStartupError();
+  virtual void displayEndStop();
 
-    virtual void displayNotReady();
-    virtual void displayReady();
+  virtual void displayNotReady();
+  virtual void displayReady();
 
-    virtual int displayLensConversation() = 0;
+  virtual errorCodes displayLensConversation() = 0;
 
-    virtual void update();
+  virtual void update();
 };
 
 #endif // _UI_INTERFACE_H

@@ -21,6 +21,9 @@ String errorCodeToString(errorCodes theErrorCode)
     case LENS_MAN_BAD_CR_RESPONSE:
         return "LENS_MAN_BAD_CR_RESPONSE";
 
+    case UI_MSG_BUFFER_EMPTY:
+        return "UI_MSG_BUFFER_EMPTY";
+
     default:
         return "UNKNOWN_CODE";
     }

@@ -103,13 +103,24 @@ void UI::displayReady()
 // Class Definition: Write to Serial Port
 //-----------------------------------------------------------------
 
+void UI::_printErrorCode(errorCodes theErrorCode)
+{
+    String msg = errorCodeToString(theErrorCode);
+    the_serial_port->println("Error: " + msg);
+}
+
+//-----------------------------------------------------------------
 void UI::reportError(errorCodes theErrorCode)
 {
     error_led.activate();
+    _printErrorCode(theErrorCode);
 
-    String msg = errorCodeToString(theErrorCode);
+    //
 
-    the_serial_port->println("Error: " + msg);
+    the_serial_port->println("Last message:");
+    errorCodes err = displayLensConversation();
+    if (err != SUCCESS)
+        _printErrorCode(err);
 }
 
 //-----------------------------------------------------------------
@@ -120,14 +131,12 @@ int UI::_writeHexSequenceToSerial(uint8_t sequence[], unsigned int length)
     {
         the_serial_port->print("Ox");
         if (sequence[i] < 16)
-        {
             the_serial_port->print("0");
-        }
+
         the_serial_port->print(sequence[i], HEX);
+
         if (i < length - 1)
-        {
             the_serial_port->print(",");
-        }
     }
     the_serial_port->println(".");
 
@@ -135,7 +144,7 @@ int UI::_writeHexSequenceToSerial(uint8_t sequence[], unsigned int length)
 }
 
 //-----------------------------------------------------------------
-int UI::displayLensConversation()
+errorCodes UI::displayLensConversation()
 {
     // TDOD check serial port is open
     uint8_t msgBuffer[MSG_BUFFER_LENGTH];
@@ -143,37 +152,34 @@ int UI::displayLensConversation()
 
     lensPortInterface *the_lens_port = the_lens_manager->getLensPort();
 
-    if (int err = the_lens_port->getMsgLength(msgLength))
+    if (errorCodes err = the_lens_port->getMsgLength(msgLength))
         return err;
 
     if (msgLength == 0)
-    {
-        // reportError("ERR_MSG_EMPTY");
-        return 1;
-    }
+        return UI_MSG_BUFFER_EMPTY;
 
-    if (int err = the_lens_port->getMsg(msgBuffer, msgLength))
+    if (errorCodes err = the_lens_port->getMsg(msgBuffer, msgLength))
         return err;
 
     //
 
-    Serial.println("----------------");
-    Serial.print("->the_lens_port: ");
+    the_serial_port->println("----------------");
+    the_serial_port->print("->the_lens_port: ");
 
     _writeHexSequenceToSerial(msgBuffer, msgLength);
 
     //
 
-    if (int err = the_lens_port->getAnswer(msgBuffer, msgLength))
+    if (errorCodes err = the_lens_port->getAnswer(msgBuffer, msgLength))
         return err;
 
-    if (int err = _writeHexSequenceToSerial(msgBuffer, msgLength))
+    if (errorCodes err = _writeHexSequenceToSerial(msgBuffer, msgLength))
         return err;
 
-    Serial.print("<-the_lens_port: ");
-    Serial.println("----------------");
+    the_serial_port->print("<-the_lens_port: ");
+    the_serial_port->println("----------------");
 
     //
 
-    return 0;
+    return SUCCESS;
 }

@@ -237,7 +237,7 @@ errorCodes lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
 
     msgLength = msgLength_;
 
-    for (unsigned int p; p < msgLength; p++)
+    for (unsigned int p = 0; p < msgLength; p++)
     {
         SPI_MOSI_buffer[p] = msg[p];
         SPI_MISO_buffer[p] = 0x00;
@@ -250,8 +250,8 @@ errorCodes lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
 errorCodes lensPort::getMsg(uint8_t msg[], unsigned int &msgLength_)
 {
 
-    for (unsigned int p; p < msgLength; p++)
-        msg[p] = SPI_MISO_buffer[p];
+    for (unsigned int p = 0; p < msgLength; p++)
+        msg[p] = SPI_MOSI_buffer[p];
 
     msgLength_ = msgLength;
 
@@ -272,7 +272,7 @@ errorCodes lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
     if (!msgAvailable)
         return LENS_PORT_NO_ANSWER_AVAILABLE;
 
-    for (unsigned int p; p < msgLength; p++)
+    for (unsigned int p = 0; p < msgLength; p++)
         answer[p] = SPI_MISO_buffer[p];
 
     return SUCCESS;

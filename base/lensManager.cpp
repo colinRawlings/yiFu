@@ -107,21 +107,21 @@ errorCodes lensManager::initLens()
         if (err == SUCCESS)
             break;
 
-         if (n >= MAX_INIT_ATTEMPTS)
-         {
-             the_ui->reportError(err);
-             the_ui->displayStartupError();
-         }
+        if (n >= MAX_INIT_ATTEMPTS)
+        {
+            the_ui->reportError(err);
+            the_ui->displayStartupError();
+        }
 
-         n++;
+        n++;
     }
 
-     err = _sendCR(true);
-     if (err != SUCCESS)
-     {
-         the_ui->reportError(err);
-         the_ui->displayStartupError();
-     }
+    err = _sendCR(true);
+    if (err != SUCCESS)
+    {
+        the_ui->reportError(err);
+        the_ui->displayStartupError();
+    }
 
     the_ui->displayReady();
 
