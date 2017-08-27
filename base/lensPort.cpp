@@ -275,6 +275,8 @@ errorCodes lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
     for (unsigned int p = 0; p < msgLength; p++)
         answer[p] = SPI_MISO_buffer[p];
 
+    answerLength = msgLength;
+
     return SUCCESS;
 }
 

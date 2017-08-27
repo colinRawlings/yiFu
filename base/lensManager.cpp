@@ -72,6 +72,7 @@ errorCodes lensManager::_sendCR(bool fastMode)
     if (errorCodes err = the_lens_port.getAnswer(CRAnswer, answerLength))
         return err;
 
+    
     if (answerLength != CRLength)
         return LENS_MAN_BAD_CR_LENGTH;
 

@@ -173,10 +173,11 @@ errorCodes UI::displayLensConversation()
     if (errorCodes err = the_lens_port->getAnswer(msgBuffer, msgLength))
         return err;
 
+    the_serial_port->print("<-the_lens_port: ");
+
     if (errorCodes err = _writeHexSequenceToSerial(msgBuffer, msgLength))
         return err;
 
-    the_serial_port->print("<-the_lens_port: ");
     the_serial_port->println("----------------");
 
     //
