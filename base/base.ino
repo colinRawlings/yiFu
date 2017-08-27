@@ -22,11 +22,10 @@ void setup()
 
     the_lens_manager->setUI(the_ui);
 
-    the_ui->reportError(LENS_PORT_CLK_PULL_DOWN_TIMEOUT);
+    
+    errorCodes err = the_lens_manager->initLens();
 
-    // Serial.print(errorCodeToString(LENS_PORT_CLK_PULL_DOWN_TIMEOUT));
-
-    //the_lens_manager->initLens();
+    the_ui->reportError(err);
 
     //
 }

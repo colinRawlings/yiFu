@@ -197,7 +197,10 @@ errorCodes lensPort::_waitForLens(unsigned long timeout_us)
     {
         T1 = micros(); // this just wastes time, interrupts are still off
         if (N1_iter < n_iter)
+        {
+            interrupts();
             return LENS_PORT_CLK_PULL_DOWN_TIMEOUT;
+        }
 
         n_iter++;
     }

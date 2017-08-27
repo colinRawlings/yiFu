@@ -58,14 +58,14 @@ void UI::update()
 //-----------------------------------------------------------------
 void UI::displayStartupError()
 {
+    the_serial_port->println("Startup Failed");
+
     while (true)
     {
         error_led.turnOn();
         delay(200);
         error_led.turnOff();
         delay(200);
-
-        the_serial_port->println("startup error.");
     }
 }
 
