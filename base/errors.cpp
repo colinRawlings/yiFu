@@ -20,6 +20,8 @@ String errorCodeToString(errorCodes theErrorCode)
         return "LENS_MAN_BAD_CR_LENGTH";
     case LENS_MAN_BAD_CR_RESPONSE:
         return "LENS_MAN_BAD_CR_RESPONSE";
+    case LENS_MAN_BAD_FL:
+        return "LENS_MAN_BAD_FL";
 
     case UI_MSG_BUFFER_EMPTY:
         return "UI_MSG_BUFFER_EMPTY";

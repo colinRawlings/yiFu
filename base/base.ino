@@ -22,11 +22,8 @@ void setup()
 
     the_lens_manager->setUI(the_ui);
 
-    errorCodes err = the_lens_manager->initLens();
-
-    the_ui->displayLensConversation();
-
-    //
+    if (errorCodes err = the_lens_manager->initLens())
+        the_ui->reportError(err);
 }
 
 //-----------------------------------------------------------------

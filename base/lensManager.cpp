@@ -120,10 +120,134 @@ errorCodes lensManager::_activateLens()
 }
 
 //-----------------------------------------------------------------
-void lensManager::_reportFL()
+errorCodes lensManager::_activateISControl()
 {
-    Serial.println(FLmin_mm);
-    Serial.println(FLmax_mm);
+    unsigned int msgLength = 8;
+    uint8_t msg[msgLength];
+    uint8_t answer[msgLength];
+    unsigned int answerLength = 0;
+
+    //
+
+    msg[0] = 0x91;
+    msg[1] = 0xA7;
+    msg[2] = 0x58;
+    msg[3] = 0x00;
+
+    msg[4] = 0x91;
+    msg[5] = 0xA7;
+    msg[6] = 0x58;
+    msg[7] = 0x00;
+
+    //
+
+    if (errorCodes err = the_lens_port.setMsg(msg, msgLength))
+        return err;
+
+    if (errorCodes err = the_lens_port.sendFastMsg())
+        return err;
+
+    //
+
+    if (errorCodes err = the_lens_port.getAnswer(answer, answerLength))
+        return err;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensManager::_activateTelePhotoMFControl()
+{
+    unsigned int msgLength = 8;
+    uint8_t msg[msgLength];
+    uint8_t answer[msgLength];
+    unsigned int answerLength = 0;
+
+    //
+
+    msg[0] = 0xFB;
+    msg[1] = 0x1B;
+    msg[2] = 0xFB;
+    msg[3] = 0x1B;
+
+    msg[4] = 0x91;
+    msg[5] = 0xAA;
+    msg[6] = 0x00;
+    msg[7] = 0x00;
+
+    //
+
+    if (errorCodes err = the_lens_port.setMsg(msg, msgLength))
+        return err;
+
+    if (errorCodes err = the_lens_port.sendFastMsg())
+        return err;
+
+    //
+
+    if (errorCodes err = the_lens_port.getAnswer(answer, answerLength))
+        return err;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensManager::_activatePrimeMFControl()
+{
+    unsigned int msgLength = 8;
+    uint8_t msg[msgLength];
+    uint8_t answer[msgLength];
+    unsigned int answerLength = 0;
+
+    //
+
+    msg[0] = 0xFB;
+    msg[1] = 0x1B;
+    msg[2] = 0xFB;
+    msg[3] = 0x1B;
+
+    msg[4] = 0x91;
+    msg[5] = 0x29;
+    msg[6] = 0x00;
+    msg[7] = 0x00;
+
+    //
+
+    if (errorCodes err = the_lens_port.setMsg(msg, msgLength))
+        return err;
+
+    if (errorCodes err = the_lens_port.sendFastMsg())
+        return err;
+
+    //
+
+    if (errorCodes err = the_lens_port.getAnswer(answer, answerLength))
+        return err;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensManager::_activateLensControls()
+{
+    if (FLmax_mm == 0 || FLmin_mm == 0)
+        return LENS_MAN_BAD_FL;
+
+    if (FLmin_mm == FLmax_mm)
+    {
+        if (errorCodes err = _activatePrimeMFControl())
+            return err;
+    }
+    else
+    {
+        if (errorCodes err = _activateISControl())
+            return err;
+
+        if (errorCodes err = _activateTelePhotoMFControl())
+            return err;
+    }
+
+    return SUCCESS;
 }
 
 //-----------------------------------------------------------------
@@ -159,13 +283,11 @@ errorCodes lensManager::initLens()
         if (err == SUCCESS)
             break;
 
-        if (n >= MAX_INIT_ATTEMPTS)
+        if (n++ >= MAX_INIT_ATTEMPTS)
         {
             the_ui->reportError(err);
             the_ui->displayStartupError();
         }
-
-        n++;
     }
 
     err = _sendCR(FAST);
@@ -183,6 +305,9 @@ errorCodes lensManager::initLens()
         return err;
 
     the_ui->reportFocalLengths();
+
+    if (err = _activateLensControls())
+        return err;
 
     return SUCCESS;
 }

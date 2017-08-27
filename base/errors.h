@@ -14,6 +14,7 @@ enum errorCodes
 
     LENS_MAN_BAD_CR_LENGTH,
     LENS_MAN_BAD_CR_RESPONSE,
+    LENS_MAN_BAD_FL,
 
     UI_MSG_BUFFER_EMPTY
 };

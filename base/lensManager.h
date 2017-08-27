@@ -32,10 +32,12 @@ private:
   void _turnOnPower();
   void _turnOffPower();
 
-  errorCodes _activateLens();
   errorCodes _sendCR(msgSpeed speed);
-
-  void _reportFL();
+  errorCodes _activateISControl();
+  errorCodes _activateTelePhotoMFControl();
+  errorCodes _activatePrimeMFControl();
+  errorCodes _activateLensControls();
+  errorCodes _activateLens();
 
 public:
   // byte conversion functions
