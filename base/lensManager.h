@@ -7,6 +7,7 @@
 #include "lensManagerInterface.h"
 
 #include "lensPort.h"
+#include "focalDistanceManager.h"
 
 #include "errors.h"
 #include "Arduino.h"
@@ -20,6 +21,7 @@ class lensManager : public lensManagerInterface
 private:
   UIInterface *the_ui;
   lensPort the_lens_port;
+  focalDistanceManager the_fd_manager;
 
   int FD_plus;
   int FD_minus;
@@ -49,6 +51,7 @@ public:
 
   void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm);
   lensPortInterface *getLensPort();
+  focalDistanceManagerInterface *getFocalDistanceManager();
 };
 
 #endif // _LENS_MANAGER_H

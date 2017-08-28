@@ -2,6 +2,7 @@
 
 #include "UIInterface.h"
 #include "lensPortInterface.h"
+#include "focalDistanceManagerInterface.h"
 
 #include "errors.h"
 #include "Arduino.h"
@@ -13,7 +14,9 @@
 // Class Definition: Construct
 //-----------------------------------------------------------------
 lensManager::lensManager()
-    : the_lens_port()
+    : the_lens_port(),
+      the_fd_manager()
+
 {
     FLmin_mm = 0;
     FLmax_mm = 0;
@@ -22,7 +25,7 @@ lensManager::lensManager()
 
     _initPower();
 
-    // set ref to the_lens_port
+    the_fd_manager.setTheLensPort(&the_lens_port);
 }
 
 //-----------------------------------------------------------------
@@ -264,6 +267,12 @@ void lensManager::getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLengt
 lensPortInterface *lensManager::getLensPort()
 {
     return &the_lens_port;
+}
+
+//-----------------------------------------------------------------
+focalDistanceManagerInterface *lensManager::getFocalDistanceManager()
+{
+    return &the_fd_manager;
 }
 
 //-----------------------------------------------------------------

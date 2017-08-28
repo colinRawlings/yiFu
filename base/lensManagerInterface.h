@@ -6,6 +6,7 @@
 
 class UIInterface;
 class lensPortInterface;
+class focalDistanceManagerInterface;
 
 class lensManagerInterface
 {
@@ -15,6 +16,7 @@ public:
 
   virtual void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm) = 0;
   virtual lensPortInterface *getLensPort() = 0;
+  virtual focalDistanceManagerInterface *getFocalDistanceManager() = 0;
 };
 
 #endif //_LENS_MANAGER_INTERFACE_H

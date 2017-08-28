@@ -3,13 +3,13 @@
 
 //
 #include "UIInterface.h"
-#include "Arduino.h"
 
 #include "pushSwitch.h"
 #include "LED.h"
 #include "persistentLED.h"
 
 #include "errors.h"
+#include "Arduino.h"
 
 //
 class lensManagerInterface;

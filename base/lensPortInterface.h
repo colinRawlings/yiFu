@@ -13,6 +13,11 @@ enum msgSpeed
 class lensPortInterface
 {
 public:
+  virtual errorCodes setMsg(uint8_t msg[], unsigned int msgLength_) = 0;
+
+  virtual errorCodes sendFastMsg() = 0;
+  virtual errorCodes sendSlowMsg() = 0;
+
   virtual errorCodes getMsgLength(unsigned int &msgLength_) = 0;
   virtual errorCodes getMsgSpeed(msgSpeed &theSpeed) = 0;
   virtual errorCodes getMsg(uint8_t msg[], unsigned int &msgLength_) = 0;

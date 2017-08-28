@@ -29,9 +29,6 @@ void setup()
 //-----------------------------------------------------------------
 void loop()
 {
-    // ui.displayLensConversation();
-
-    // ui.displayLensConversation();
 
     performUpdates();
 }

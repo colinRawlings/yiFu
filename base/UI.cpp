@@ -2,6 +2,7 @@
 
 #include "lensManagerInterface.h"
 #include "lensPortInterface.h"
+#include "focalDistanceManagerInterface.h"
 
 #include "HWdefs.h"
 #include "SWdefs.h"
@@ -45,6 +46,31 @@ void UI::setSerialPort(Stream *the_serial_port_)
 //-----------------------------------------------------------------
 void UI::update()
 {
+    if (plus_switch.getState() == PRESSED)
+    {
+        focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+        if (errorCodes err = the_fd_manager->gotoInfFocalDistance())
+            reportError(err);
+
+        int fd;
+        if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+            reportError(err);
+
+        Serial.println(fd);
+    }
+
+    if (minus_switch.getState() == PRESSED)
+    {
+        focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+        if (errorCodes err = the_fd_manager->gotoMinFocalDistance())
+            reportError(err);
+
+        int fd;
+        if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+            reportError(err);
+
+        Serial.println(fd);
+    }
 
     // get commamnds from serial port
 
