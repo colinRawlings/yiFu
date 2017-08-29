@@ -37,6 +37,14 @@ private:
   void _printErrorCode(errorCodes theErrorCode);
   void _addHrule();
 
+  void _gotoFocalDistancePlus();
+  void _gotoFocalDistanceMinus();
+
+  void _setFocalDistanceMemoryPlus();
+  void _setFocalDistanceMemoryMinus();
+
+  void _displayFocalDistanceMemorySet();
+
 public:
   UI(bool echoOn_);
 

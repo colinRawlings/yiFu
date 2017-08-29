@@ -16,7 +16,11 @@ enum errorCodes
     LENS_MAN_BAD_CR_RESPONSE,
     LENS_MAN_BAD_FL,
 
-    UI_MSG_BUFFER_EMPTY
+    UI_MSG_BUFFER_EMPTY,
+
+    UTILS_TOO_BIT_BIT_OF_BYTE,
+
+    FOCUS_MOVE_TIMEOUT
 };
 
 String errorCodeToString(errorCodes theErrorCode);

@@ -46,31 +46,17 @@ void UI::setSerialPort(Stream *the_serial_port_)
 //-----------------------------------------------------------------
 void UI::update()
 {
-    if (plus_switch.getState() == PRESSED)
-    {
-        focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
-        if (errorCodes err = the_fd_manager->gotoInfFocalDistance())
-            reportError(err);
+    if ((plus_switch.getState() == PRESSED) && (set_switch.getState() == UNPRESSED))
+        _gotoFocalDistancePlus();
 
-        int fd;
-        if (errorCodes err = the_fd_manager->getFocalDistance(fd))
-            reportError(err);
+    if ((minus_switch.getState() == PRESSED) && (set_switch.getState() == UNPRESSED))
+        _gotoFocalDistanceMinus();
 
-        Serial.println(fd);
-    }
+    if ((plus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
+        _setFocalDistanceMemoryPlus();
 
-    if (minus_switch.getState() == PRESSED)
-    {
-        focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
-        if (errorCodes err = the_fd_manager->gotoMinFocalDistance())
-            reportError(err);
-
-        int fd;
-        if (errorCodes err = the_fd_manager->getFocalDistance(fd))
-            reportError(err);
-
-        Serial.println(fd);
-    }
+    if ((minus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
+        _setFocalDistanceMemoryMinus();
 
     // get commamnds from serial port
 
@@ -116,6 +102,20 @@ void UI::displayEndStop()
     }
 
     error_led.turnOff();
+    status_led.turnOn();
+}
+
+//-----------------------------------------------------------------
+void UI::_displayFocalDistanceMemorySet()
+{
+    status_led.turnOff();
+
+    for (unsigned int p = 0; p < N_BLINKS_AT_FOCUS_SET; p++)
+    {
+        status_led.toggle();
+        delay(DT_BLINKS_AT_FOCUS_SET_MS);
+    }
+
     status_led.turnOn();
 }
 
@@ -246,4 +246,93 @@ errorCodes UI::displayLensConversation()
     //
 
     return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+// Class Definition: operations
+//-----------------------------------------------------------------
+
+void UI::_gotoFocalDistancePlus()
+{
+    status_led.turnOff();
+
+    focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+    if (errorCodes err = the_fd_manager->gotoFocalDistancePlus())
+        reportError(err);
+
+    //
+
+    int fd;
+    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+        reportError(err);
+
+    the_serial_port->print("Moved to + focal distance: ");
+    the_serial_port->println(fd);
+
+    while (plus_switch.getState() == PRESSED)
+        ;
+
+    status_led.turnOn();
+}
+
+//-----------------------------------------------------------------
+void UI::_gotoFocalDistanceMinus()
+{
+    status_led.turnOff();
+
+    focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+    if (errorCodes err = the_fd_manager->gotoFocalDistanceMinus())
+        reportError(err);
+
+    //
+
+    int fd;
+    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+        reportError(err);
+
+    the_serial_port->print("Moved to - focal distance: ");
+    the_serial_port->println(fd);
+
+    while (minus_switch.getState() == PRESSED)
+        ;
+
+    status_led.turnOn();
+}
+
+//-----------------------------------------------------------------
+void UI::_setFocalDistanceMemoryMinus()
+{
+
+    focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+
+    int fd;
+    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+        reportError(err);
+
+    the_fd_manager->setFocalDistanceMemoryMinus(fd);
+
+    status_led.turnOff();
+    while ((minus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
+        ;
+
+    _displayFocalDistanceMemorySet();
+}
+
+//-----------------------------------------------------------------
+void UI::_setFocalDistanceMemoryPlus()
+{
+
+    focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+
+    int fd;
+    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+        reportError(err);
+
+    the_fd_manager->setFocalDistanceMemoryPlus(fd);
+
+    status_led.turnOff();
+    while ((plus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
+        ;
+
+    _displayFocalDistanceMemorySet();
 }

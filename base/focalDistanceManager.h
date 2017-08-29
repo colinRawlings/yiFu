@@ -7,6 +7,16 @@ class lensPortInterface;
 
 #include "Arduino.h"
 
+//-----------------------------------------------------------------
+struct focusStatus
+{
+    bool autoFocusMode;
+    bool focusMotorMoving;
+    bool focusMotorAccelerating;
+    bool focusMotorAtEndStop;
+};
+
+//-----------------------------------------------------------------
 class focalDistanceManager : public focalDistanceManagerInterface
 {
   private:
@@ -18,6 +28,10 @@ class focalDistanceManager : public focalDistanceManagerInterface
 
     lensPortInterface *the_lens_port;
 
+  private:
+    errorCodes _waitMoveComplete();
+    errorCodes _getStatus(focusStatus &status);
+
   public:
     focalDistanceManager();
 
@@ -25,6 +39,16 @@ class focalDistanceManager : public focalDistanceManagerInterface
 
     errorCodes gotoMinFocalDistance();
     errorCodes gotoInfFocalDistance();
+
+    void setFocalDistanceMemoryPlus(int focalDistance);
+    void setFocalDistanceMemoryMinus(int focalDistance);
+
+    errorCodes gotoFocalDistancePlus();
+    errorCodes gotoFocalDistanceMinus();
+
+    errorCodes stepFocalDistance(int step);
+    errorCodes setFocalDistance(int focalDistance);
+
     errorCodes getFocalDistance(int &focalDistance);
 };
 

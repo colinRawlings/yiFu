@@ -26,6 +26,12 @@ String errorCodeToString(errorCodes theErrorCode)
     case UI_MSG_BUFFER_EMPTY:
         return "UI_MSG_BUFFER_EMPTY";
 
+    case UTILS_TOO_BIT_BIT_OF_BYTE:
+        return "UTILS_TOO_BIT_BIT_OF_BYTE";
+
+    case FOCUS_MOVE_TIMEOUT:
+        return "FOCUS_MOVE_TIMEOUT";
+
     default:
         return "UNKNOWN_CODE";
     }
