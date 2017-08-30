@@ -264,6 +264,8 @@ errorCodes lensInitializer::initLens()
     unsigned int n = 0;
     errorCodes err;
 
+    turnOnPower();
+
     while (true)
     {
         err = _sendCR(SLOW);

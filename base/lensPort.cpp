@@ -26,11 +26,17 @@ lensPort::lensPort()
 {
     CLK_byte = (1 << CLK_BIT);
     MOSI_byte = (1 << MOSI_BIT);
+    byte MISO_byte = (1 << MISO_BIT);
 
     //
 
-    SPI_DIR = 0x00 | CLK_byte | MOSI_byte;
-    SPI_OUTPORT = 0xFF;
+    SPI_DIR |= CLK_byte;
+    SPI_DIR |= MOSI_byte;
+    SPI_DIR &= ~MISO_byte;
+
+    SPI_OUTPORT |= CLK_byte;
+    SPI_OUTPORT |= MOSI_byte;
+    SPI_OUTPORT |= MISO_byte;
 }
 
 //-----------------------------------------------------------------
