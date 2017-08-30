@@ -51,6 +51,8 @@ public:
   void setLensManager(lensManagerInterface *the_lens_manager_);
   void setSerialPort(Stream *the_serial_port_);
 
+  void initLens();
+
   void reportError(errorCodes theErrorCode);
   void displayStartupError();
   void displayEndStop();

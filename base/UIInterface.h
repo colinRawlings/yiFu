@@ -12,6 +12,8 @@ public:
   virtual void setLensManager(lensManagerInterface *theLens_) = 0;
   virtual void setSerialPort(Stream *theSerialPort_) = 0;
 
+  virtual void initLens() = 0;
+
   virtual void reportError(errorCodes theErrorCode);
   virtual void displayStartupError();
   virtual void displayEndStop();

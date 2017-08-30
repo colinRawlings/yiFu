@@ -3,9 +3,10 @@
 
 #include "focalDistanceManagerInterface.h"
 
-class lensPortInterface;
-
+#include "errors.h"
 #include "Arduino.h"
+
+class lensPortInterface;
 
 //-----------------------------------------------------------------
 struct focusStatus

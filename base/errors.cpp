@@ -16,12 +16,14 @@ String errorCodeToString(errorCodes theErrorCode)
     case LENS_PORT_NO_ANSWER_AVAILABLE:
         return "LENS_PORT_NO_ANSWER_AVAILABLE";
 
-    case LENS_MAN_BAD_CR_LENGTH:
-        return "LENS_MAN_BAD_CR_LENGTH";
-    case LENS_MAN_BAD_CR_RESPONSE:
-        return "LENS_MAN_BAD_CR_RESPONSE";
-    case LENS_MAN_BAD_FL:
-        return "LENS_MAN_BAD_FL";
+    case LENS_INIT_BAD_CR_LENGTH:
+        return "LENS_INIT_BAD_CR_LENGTH";
+    case LENS_INIT_BAD_CR_RESPONSE:
+        return "LENS_INIT_BAD_CR_RESPONSE";
+    case LENS_INIT_BAD_FL:
+        return "LENS_INIT_BAD_FL";
+    case LENS_INIT_SLOW_CR_FAILED:
+        return "LENS_INIT_SLOW_CR_FAILED";
 
     case UI_MSG_BUFFER_EMPTY:
         return "UI_MSG_BUFFER_EMPTY";

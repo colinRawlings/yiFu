@@ -1,8 +1,10 @@
 #include "UI.h"
 
-#include "lensManagerInterface.h"
 #include "lensPortInterface.h"
+#include "lensManagerInterface.h"
+
 #include "focalDistanceManagerInterface.h"
+#include "lensInitializerInterface.h"
 
 #include "HWdefs.h"
 #include "SWdefs.h"
@@ -181,7 +183,9 @@ void UI::reportFocalLengths()
     int FLmin_mm;
     int FLmax_mm;
 
-    the_lens_manager->getLensFocalLengths(FLmin_mm, FLmax_mm);
+    lensInitializerInterface *the_lens_intializer = the_lens_manager->getLensInitializer();
+
+    the_lens_intializer->getLensFocalLengths(FLmin_mm, FLmax_mm);
 
     _addHrule();
 
@@ -335,4 +339,22 @@ void UI::_setFocalDistanceMemoryPlus()
         ;
 
     _displayFocalDistanceMemorySet();
+}
+
+//-----------------------------------------------------------------
+void UI::initLens()
+{
+    displayNotReady();
+
+    lensInitializerInterface *the_lens_initializer = the_lens_manager->getLensInitializer();
+
+    errorCodes err = the_lens_initializer->initLens();
+
+    if (err != SUCCESS)
+    {
+        reportError(err);
+        displayStartupError();
+    }
+
+    displayReady();
 }
