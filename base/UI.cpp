@@ -70,7 +70,7 @@ void UI::update()
 //-----------------------------------------------------------------
 // Class Definition: LEDs
 //-----------------------------------------------------------------
-void UI::displayStartupError()
+void UI::_displayStartupError()
 {
     the_serial_port->println("Startup Failed");
 
@@ -84,13 +84,13 @@ void UI::displayStartupError()
 }
 
 //-----------------------------------------------------------------
-void UI::displayNotReady()
+void UI::_displayNotReady()
 {
     status_led.turnOff();
 }
 
 //-----------------------------------------------------------------
-void UI::displayEndStop()
+void UI::_displayEndStop()
 {
     error_led.turnOn();
     status_led.turnOff();
@@ -122,7 +122,7 @@ void UI::_displayFocalDistanceMemorySet()
 }
 
 //-----------------------------------------------------------------
-void UI::displayReady()
+void UI::_displayReady()
 {
     status_led.turnOn();
 }
@@ -138,7 +138,7 @@ void UI::_printErrorCode(errorCodes theErrorCode)
 }
 
 //-----------------------------------------------------------------
-void UI::reportError(errorCodes theErrorCode)
+void UI::_reportError(errorCodes theErrorCode)
 {
     error_led.activate();
     _printErrorCode(theErrorCode);
@@ -146,7 +146,7 @@ void UI::reportError(errorCodes theErrorCode)
     //
 
     the_serial_port->println("Last message:");
-    errorCodes err = displayLensConversation();
+    errorCodes err = _displayLensConversation();
     if (err != SUCCESS)
         _printErrorCode(err);
 }
@@ -178,8 +178,16 @@ void UI::_addHrule()
 }
 
 //-----------------------------------------------------------------
-void UI::reportFocalLengths()
+void UI::_reportFocalLengths()
 {
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    if (the_serial_port == NULL)
+        _reportError(UI_SERIAL_PORT_UNSET);
+
+    //
+
     int FLmin_mm;
     int FLmax_mm;
 
@@ -199,9 +207,16 @@ void UI::reportFocalLengths()
 }
 
 //-----------------------------------------------------------------
-errorCodes UI::displayLensConversation()
+errorCodes UI::_displayLensConversation()
 {
-    // TDOD check serial port is open
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    if (the_serial_port == NULL)
+        _reportError(UI_SERIAL_PORT_UNSET);
+
+    //
+
     uint8_t msgBuffer[MSG_BUFFER_LENGTH];
     unsigned int msgLength;
     msgSpeed speed;
@@ -258,17 +273,25 @@ errorCodes UI::displayLensConversation()
 
 void UI::_gotoFocalDistancePlus()
 {
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    if (the_serial_port == NULL)
+        _reportError(UI_SERIAL_PORT_UNSET);
+
+    //
+
     status_led.turnOff();
 
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
     if (errorCodes err = the_fd_manager->gotoFocalDistancePlus())
-        reportError(err);
+        _reportError(err);
 
     //
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
-        reportError(err);
+        _reportError(err);
 
     the_serial_port->print("Moved to + focal distance: ");
     the_serial_port->println(fd);
@@ -282,17 +305,25 @@ void UI::_gotoFocalDistancePlus()
 //-----------------------------------------------------------------
 void UI::_gotoFocalDistanceMinus()
 {
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    if (the_serial_port == NULL)
+        _reportError(UI_SERIAL_PORT_UNSET);
+
+    //
+
     status_led.turnOff();
 
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
     if (errorCodes err = the_fd_manager->gotoFocalDistanceMinus())
-        reportError(err);
+        _reportError(err);
 
     //
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
-        reportError(err);
+        _reportError(err);
 
     the_serial_port->print("Moved to - focal distance: ");
     the_serial_port->println(fd);
@@ -306,12 +337,16 @@ void UI::_gotoFocalDistanceMinus()
 //-----------------------------------------------------------------
 void UI::_setFocalDistanceMemoryMinus()
 {
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    //
 
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
-        reportError(err);
+        _reportError(err);
 
     the_fd_manager->setFocalDistanceMemoryMinus(fd);
 
@@ -325,12 +360,19 @@ void UI::_setFocalDistanceMemoryMinus()
 //-----------------------------------------------------------------
 void UI::_setFocalDistanceMemoryPlus()
 {
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    if (the_serial_port == NULL)
+        _reportError(UI_SERIAL_PORT_UNSET);
+
+    //
 
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
-        reportError(err);
+        _reportError(err);
 
     the_fd_manager->setFocalDistanceMemoryPlus(fd);
 
@@ -344,7 +386,26 @@ void UI::_setFocalDistanceMemoryPlus()
 //-----------------------------------------------------------------
 void UI::initLens()
 {
-    displayNotReady();
+    if (the_lens_manager == NULL)
+        _reportError(UI_LENS_MAN_UNSET);
+
+    if (the_serial_port == NULL)
+        _reportError(UI_SERIAL_PORT_UNSET);
+
+    //
+
+    _displayNotReady();
+
+    //
+
+    if (hold_switch.getState() == PRESSED)
+    {
+        the_serial_port->println("Booted with hold switch, skipping init");
+        _displayReady();
+        return;
+    }
+
+    //
 
     lensInitializerInterface *the_lens_initializer = the_lens_manager->getLensInitializer();
 
@@ -352,9 +413,11 @@ void UI::initLens()
 
     if (err != SUCCESS)
     {
-        reportError(err);
-        displayStartupError();
+        _reportError(err);
+        _displayStartupError();
     }
 
-    displayReady();
+    _displayReady();
+
+    _reportFocalLengths();
 }

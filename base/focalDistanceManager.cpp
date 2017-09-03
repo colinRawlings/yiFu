@@ -20,6 +20,8 @@ focalDistanceManager::focalDistanceManager()
 
     focalDistanceMemoryMinus = 0;
     focalDistanceMemoryMinusSet = false;
+
+    the_lens_port = NULL;
 }
 
 //-----------------------------------------------------------------
@@ -59,6 +61,11 @@ errorCodes focalDistanceManager::_waitMoveComplete()
 //-----------------------------------------------------------------
 errorCodes focalDistanceManager::_getStatus(focusStatus &theStatus)
 {
+    if (the_lens_port == NULL)
+        return FD_MAN_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 3;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -101,6 +108,11 @@ errorCodes focalDistanceManager::_getStatus(focusStatus &theStatus)
 //-----------------------------------------------------------------
 errorCodes focalDistanceManager::gotoMinFocalDistance()
 {
+    if (the_lens_port == NULL)
+        return FD_MAN_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 4;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -135,6 +147,11 @@ errorCodes focalDistanceManager::gotoMinFocalDistance()
 //-----------------------------------------------------------------
 errorCodes focalDistanceManager::gotoInfFocalDistance()
 {
+    if (the_lens_port == NULL)
+        return FD_MAN_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 4;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -173,6 +190,11 @@ errorCodes focalDistanceManager::getFocalDistance(int &focalDistance)
 
     //
 
+    if (the_lens_port == NULL)
+        return FD_MAN_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 3;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -205,6 +227,11 @@ errorCodes focalDistanceManager::getFocalDistance(int &focalDistance)
 //-----------------------------------------------------------------
 errorCodes focalDistanceManager::stepFocalDistance(int step)
 {
+    if (the_lens_port == NULL)
+        return FD_MAN_LENS_PORT_UNSET;
+
+    //
+
     byte mostSignificantByte = (step & 0xFF00) >> 8;
     byte leastSignificantByte = step & 0xFF;
 

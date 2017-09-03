@@ -13,6 +13,8 @@
 //-----------------------------------------------------------------
 lensInitializer::lensInitializer()
 {
+    the_lens_port = NULL;
+
     FLmin_mm = 0;
     FLmax_mm = 0;
 
@@ -36,13 +38,13 @@ void lensInitializer::_initPower()
 }
 
 //-----------------------------------------------------------------
-void lensInitializer::turnOnPower()
+void lensInitializer::_turnOnPower()
 {
     digitalWrite(lensPowerPin, LPOW_ON);
 }
 
 //-----------------------------------------------------------------
-void lensInitializer::turnOffPower()
+void lensInitializer::_turnOffPower()
 {
     digitalWrite(lensPowerPin, LPOW_OFF);
 }
@@ -53,6 +55,11 @@ void lensInitializer::turnOffPower()
 
 errorCodes lensInitializer::_sendCR(msgSpeed speed)
 {
+    if (the_lens_port == NULL)
+        return LENS_INIT_LENS_PORT_UNSET;
+
+    //
+
     unsigned int CRLength = 3;
     uint8_t CRmsg[] = {0x00, 0x0A, 0x00};
     uint8_t CRAnswer[CRLength];
@@ -90,6 +97,11 @@ errorCodes lensInitializer::_sendCR(msgSpeed speed)
 //-----------------------------------------------------------------
 errorCodes lensInitializer::_activateLens()
 {
+    if (the_lens_port == NULL)
+        return LENS_INIT_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 8;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -123,6 +135,11 @@ errorCodes lensInitializer::_activateLens()
 //-----------------------------------------------------------------
 errorCodes lensInitializer::_activateISControl()
 {
+    if (the_lens_port == NULL)
+        return LENS_INIT_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 8;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -159,6 +176,11 @@ errorCodes lensInitializer::_activateISControl()
 //-----------------------------------------------------------------
 errorCodes lensInitializer::_activateTelePhotoMFControl()
 {
+    if (the_lens_port == NULL)
+        return LENS_INIT_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 8;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -195,6 +217,11 @@ errorCodes lensInitializer::_activateTelePhotoMFControl()
 //-----------------------------------------------------------------
 errorCodes lensInitializer::_activatePrimeMFControl()
 {
+    if (the_lens_port == NULL)
+        return LENS_INIT_LENS_PORT_UNSET;
+
+    //
+
     unsigned int msgLength = 8;
     uint8_t msg[msgLength];
     uint8_t answer[msgLength];
@@ -264,7 +291,7 @@ errorCodes lensInitializer::initLens()
     unsigned int n = 0;
     errorCodes err;
 
-    turnOnPower();
+    _turnOnPower();
 
     while (true)
     {
@@ -285,6 +312,24 @@ errorCodes lensInitializer::initLens()
         return err;
 
     if (err = _activateLensControls())
+        return err;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensInitializer::resetLens()
+{
+
+    _turnOffPower();
+
+    delay(DT_TIME_OFF_INIT_LENS_MS);
+
+    _turnOnPower();
+
+    //
+
+    if (errorCodes err = initLens())
         return err;
 
     return SUCCESS;

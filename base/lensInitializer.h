@@ -19,6 +19,9 @@ class lensInitializer : public lensInitializerInterface
 
   private:
     void _initPower();
+    void _turnOnPower();
+    void _turnOffPower();
+
     errorCodes _sendCR(msgSpeed speed);
     errorCodes _activateISControl();
     errorCodes _activateTelePhotoMFControl();
@@ -32,9 +35,8 @@ class lensInitializer : public lensInitializerInterface
     void setTheLensPort(lensPortInterface *the_lens_port_);
 
     errorCodes initLens();
+    errorCodes resetLens();
 
-    void turnOnPower();
-    void turnOffPower();
     void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm);
 };
 

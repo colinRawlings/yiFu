@@ -11,6 +11,7 @@
 
 focalLengthManager::focalLengthManager()
 {
+    the_lens_port = NULL;
 }
 
 //-----------------------------------------------------------------
@@ -26,6 +27,10 @@ void focalLengthManager::setTheLensPort(lensPortInterface *the_lens_port_)
 errorCodes focalLengthManager::getFocalLength(int &focalLength)
 {
     focalLength = 0;
+
+    //
+    if (the_lens_port == NULL)
+        return FL_MAN_LENS_PORT_UNSET;
 
     //
 

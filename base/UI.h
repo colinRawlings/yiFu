@@ -45,6 +45,16 @@ private:
 
   void _displayFocalDistanceMemorySet();
 
+  errorCodes _displayLensConversation();
+  void _reportError(errorCodes theErrorCode);
+  void _displayStartupError();
+  void _displayEndStop();
+
+  void _displayNotReady();
+  void _displayReady();
+
+  void _reportFocalLengths();
+
 public:
   UI(bool echoOn_);
 
@@ -52,17 +62,6 @@ public:
   void setSerialPort(Stream *the_serial_port_);
 
   void initLens();
-
-  void reportError(errorCodes theErrorCode);
-  void displayStartupError();
-  void displayEndStop();
-
-  void reportFocalLengths();
-
-  void displayNotReady();
-  void displayReady();
-
-  errorCodes displayLensConversation();
 
   void update();
 };

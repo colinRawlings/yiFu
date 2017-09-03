@@ -14,8 +14,8 @@ class lensInitializerInterface
 
     virtual errorCodes initLens() = 0;
 
-    virtual void turnOnPower() = 0;
-    virtual void turnOffPower() = 0;
+    virtual errorCodes resetLens() = 0;
+
     virtual void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm) = 0;
 };
 
