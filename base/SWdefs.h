@@ -5,7 +5,7 @@
 // lensPort
 //-----------------------------------------------------------------
 
-#define SPI_BUFFER_LENGTH 20
+#define LENS_BUFFER_LENGTH 20
 #define DT_BETWEEN_SLOW_BYTES_US 120
 #define DT_BETWEEN_FAST_BYTES_US 10
 #define DT_LENS_TIMEOUT_US 30000
@@ -33,6 +33,8 @@
 
 #define N_BLINKS_AT_FOCUS_SET 3
 #define DT_BLINKS_AT_FOCUS_SET_MS 200
+
+#define DT_BLINKS_AT_STARTUP_ERROR 200
 
 //-----------------------------------------------------------------
 // focalDistanceManager

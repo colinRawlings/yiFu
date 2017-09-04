@@ -15,23 +15,18 @@
 //-----------------------------------------------------------------
 lensManager::lensManager()
     : the_lens_port(),
+      the_lens_initializer(),
       the_fd_manager(),
-      the_lens_initializer()
+      the_av_manager()
 
 {
     the_fd_manager.setTheLensPort(&the_lens_port);
     the_lens_initializer.setTheLensPort(&the_lens_port);
+    the_av_manager.setTheLensPort(&the_lens_port);
 }
 
 //-----------------------------------------------------------------
 // public methods
-//-----------------------------------------------------------------
-
-lensPortInterface *lensManager::getLensPort()
-{
-    return &the_lens_port;
-}
-
 //-----------------------------------------------------------------
 focalDistanceManagerInterface *lensManager::getFocalDistanceManager()
 {
@@ -42,4 +37,28 @@ focalDistanceManagerInterface *lensManager::getFocalDistanceManager()
 lensInitializerInterface *lensManager::getLensInitializer()
 {
     return &the_lens_initializer;
+}
+
+//-----------------------------------------------------------------
+apertureManagerInterface *lensManager::getApertureManager()
+{
+    return &the_av_manager;
+}
+
+//-----------------------------------------------------------------
+errorCodes lensManager::getLensConversation(lensConversation &conv)
+{
+    errorCodes err;
+
+    if (err = the_lens_port.getMsg(conv.msg, conv.msgLength))
+        return err;
+
+    err = the_lens_port.getAnswer(conv.answer, conv.msgLength);
+    if (err == LENS_PORT_NO_ANSWER_AVAILABLE)
+        conv.answerAvailable = false;
+    else if (err != SUCCESS)
+        return err;
+
+    if (err = the_lens_port.getMsgSpeed(conv.speed))
+        return err;
 }

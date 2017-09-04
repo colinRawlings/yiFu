@@ -9,6 +9,8 @@ public:
   virtual errorCodes openFully() = 0;
   virtual errorCodes openOneStep() = 0;
   virtual errorCodes closeOneStep() = 0;
+
+  virtual errorCodes getApertureValue_tics(unsigned int &av_tics) = 0;
 };
 
 #endif //_APERTURE_MANAGER_INTERFACE_H

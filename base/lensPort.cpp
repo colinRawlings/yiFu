@@ -238,7 +238,7 @@ errorCodes lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
     msgAvailable = false;
     msgLength = 0;
 
-    if (msgLength > SPI_BUFFER_LENGTH)
+    if (msgLength > LENS_BUFFER_LENGTH)
         return LENS_PORT_SPI_BUFFER_TOO_SMALL;
 
     msgLength = msgLength_;

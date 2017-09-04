@@ -36,6 +36,8 @@ public:
   errorCodes openFully();
   errorCodes openOneStep();
   errorCodes closeOneStep();
+
+  errorCodes getApertureValue_tics(unsigned int &av_tics);
 };
 
 #endif //_APERTURE_MANAGER_H

@@ -1,21 +1,35 @@
 #ifndef _LENS_MANAGER_INTERFACE_H
 #define _LENS_MANAGER_INTERFACE_H
 
+#include "SWdefs.h"
+
+#include "lensPortInterface.h" // for msgSpeed defn
+
 #include "errors.h"
 #include "Arduino.h"
 
-class lensPortInterface;
-
-class focalDistanceManagerInterface;
 class lensInitializerInterface;
+class focalDistanceManagerInterface;
+class apertureManagerInterface;
+
+struct lensConversation
+{
+  byte msg[LENS_BUFFER_LENGTH];
+  byte answer[LENS_BUFFER_LENGTH];
+
+  unsigned int msgLength;
+  bool answerAvailable;
+  msgSpeed speed;
+};
 
 class lensManagerInterface
 {
 public:
-  virtual lensPortInterface *getLensPort() = 0;
-
-  virtual focalDistanceManagerInterface *getFocalDistanceManager() = 0;
   virtual lensInitializerInterface *getLensInitializer() = 0;
+  virtual focalDistanceManagerInterface *getFocalDistanceManager() = 0;
+  virtual apertureManagerInterface *getApertureManager() = 0;
+
+  virtual errorCodes getLensConversation(lensConversation &conv) = 0;
 };
 
 #endif //_LENS_MANAGER_INTERFACE_H

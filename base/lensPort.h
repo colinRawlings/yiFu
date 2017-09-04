@@ -20,8 +20,8 @@ private:
   uint8_t CLK_byte;
   uint8_t MOSI_byte;
 
-  uint8_t SPI_MOSI_buffer[SPI_BUFFER_LENGTH];
-  uint8_t SPI_MISO_buffer[SPI_BUFFER_LENGTH];
+  uint8_t SPI_MOSI_buffer[LENS_BUFFER_LENGTH];
+  uint8_t SPI_MISO_buffer[LENS_BUFFER_LENGTH];
 
   unsigned int msgLength;
   bool msgAvailable;
@@ -37,7 +37,7 @@ private:
 
   //
 
-  void _disp_hexSeq(int len, uint8_t chars[SPI_BUFFER_LENGTH]);
+  void _disp_hexSeq(int len, uint8_t chars[LENS_BUFFER_LENGTH]);
 
 protected:
 public:

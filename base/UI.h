@@ -33,17 +33,10 @@ private:
   bool echoOn;
 
 private:
-  int _writeHexSequenceToSerial(uint8_t sequence[], unsigned int msgLength);
+  // outputs
+  void _writeHexSequenceToSerial(uint8_t sequence[], unsigned int msgLength);
   void _printErrorCode(errorCodes theErrorCode);
   void _addHrule();
-
-  void _gotoFocalDistancePlus();
-  void _gotoFocalDistanceMinus();
-
-  void _setFocalDistanceMemoryPlus();
-  void _setFocalDistanceMemoryMinus();
-
-  void _displayFocalDistanceMemorySet();
 
   errorCodes _displayLensConversation();
   void _reportError(errorCodes theErrorCode);
@@ -52,8 +45,24 @@ private:
 
   void _displayNotReady();
   void _displayReady();
+  void _displayFocalDistanceMemorySet();
 
   void _reportFocalLengths();
+  void _reportApertureValue();
+
+  // inputs
+
+  // operations
+  void _checkUIReadyForOperation();
+
+  void _gotoFocalDistancePlus();
+  void _gotoFocalDistanceMinus();
+
+  void _setFocalDistanceMemoryPlus();
+  void _setFocalDistanceMemoryMinus();
+
+  void _apertureOpenOneStep();
+  void _apertureCloseOneStep();
 
 public:
   UI(bool echoOn_);

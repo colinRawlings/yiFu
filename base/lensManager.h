@@ -7,16 +7,21 @@
 #include "lensManagerInterface.h"
 
 #include "lensPort.h"
-#include "focalDistanceManager.h"
 #include "lensInitializer.h"
+#include "focalDistanceManager.h"
+#include "apertureManager.h"
 
 #include "errors.h"
 #include "Arduino.h"
 
 //
+
 class UIInterface;
 class lensPortInterface;
 class lensInitializerInterface;
+class aperertureManagerInterface;
+
+//
 
 class lensManager : public lensManagerInterface
 {
@@ -25,14 +30,16 @@ private:
 
   focalDistanceManager the_fd_manager;
   lensInitializer the_lens_initializer;
+  apertureManager the_av_manager;
 
 public:
   lensManager();
 
-  lensPortInterface *getLensPort();
-
-  focalDistanceManagerInterface *getFocalDistanceManager();
   lensInitializerInterface *getLensInitializer();
+  focalDistanceManagerInterface *getFocalDistanceManager();
+  apertureManagerInterface *getApertureManager();
+
+  errorCodes getLensConversation(lensConversation &conv);
 };
 
 #endif // _LENS_MANAGER_H

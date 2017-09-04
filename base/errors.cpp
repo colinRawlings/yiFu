@@ -46,6 +46,8 @@ String errorCodeToString(errorCodes theErrorCode)
     case FL_MAN_LENS_PORT_UNSET:
         return "FL_MAN_LENS_PORT_UNSET";
 
+    case AV_AV_UNKNOWN:
+        return "AV_AV_UNKNOWN";
     case AV_LENS_PORT_UNSET:
         return "AV_LENS_PORT_UNSET";
     case AV_LENS_INITIALIZER_UNSET:

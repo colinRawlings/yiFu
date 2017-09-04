@@ -33,6 +33,39 @@ void apertureManager::setTheLensInitializer(lensInitializerInterface *the_lens_i
 }
 
 //-----------------------------------------------------------------
+// Class Definition: Private
+//-----------------------------------------------------------------
+
+errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
+{
+
+    errorCodes err;
+
+    if (the_lens_initializer == NULL)
+        return AV_LENS_INITIALIZER_UNSET;
+
+    if (the_lens_port == NULL)
+        return AV_LENS_PORT_UNSET;
+
+    //
+
+    Serial.print("here I would try to change the aperture");
+
+    if (err != SUCCESS)
+    {
+        errorCodes err2 = the_lens_initializer->resetLens();
+        return err;
+    }
+
+    //
+
+    if (err = the_lens_initializer->resetLens())
+        return err;
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
 // Class Definition: Public
 //-----------------------------------------------------------------
 
@@ -57,7 +90,7 @@ errorCodes apertureManager::openOneStep()
     {
         apertureValue_tics += APERTURE_STEP_SIZE_TICS;
         if (apertureValue_tics > MAX_APERTURE_TICS)
-            apertureValue_tics = APERTURE_STEP_SIZE_TICS;
+            apertureValue_tics = MAX_APERTURE_TICS;
     }
 
     return SUCCESS;
@@ -71,32 +104,21 @@ errorCodes apertureManager::closeOneStep()
 
     if (apertureValueKnown)
     {
-        apertureValue_tics += APERTURE_STEP_SIZE_TICS;
-        if (apertureValue_tics > MAX_APERTURE_TICS)
-            apertureValue_tics = APERTURE_STEP_SIZE_TICS;
+        apertureValue_tics -= APERTURE_STEP_SIZE_TICS;
+        if (apertureValue_tics < 0)
+            apertureValue_tics = 0;
     }
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
+errorCodes apertureManager::getApertureValue_tics(unsigned int &av_tics)
 {
+    av_tics = 0;
 
-    errorCodes err;
+    if (!apertureValueKnown)
+        return AV_AV_UNKNOWN;
 
-    if (the_lens_initializer == NULL)
-        return AV_LENS_INITIALIZER_UNSET;
-
-    if (the_lens_port == NULL)
-        return AV_LENS_PORT_UNSET;
-
-    //
-
-    Serial.print("here I would try to change the aperture");
-
-    //
-
-    if (err = the_lens_initializer->resetLens())
-        return err;
+    av_tics = apertureValue_tics;
 }
