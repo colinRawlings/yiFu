@@ -118,13 +118,6 @@ void UI::_reportError(errorCodes theErrorCode)
 {
     error_led.activate();
     _printErrorCode(theErrorCode);
-
-    //
-
-    the_serial_port->println("Last message:");
-    errorCodes err = _displayLensConversation();
-    if (err != SUCCESS)
-        _printErrorCode(err);
 }
 
 //-----------------------------------------------------------------
@@ -154,11 +147,8 @@ void UI::_addHrule()
 //-----------------------------------------------------------------
 void UI::_reportFocalLengths()
 {
-    if (the_lens_manager == NULL)
-        _reportError(UI_LENS_MAN_UNSET);
-
-    if (the_serial_port == NULL)
-        _reportError(UI_SERIAL_PORT_UNSET);
+    if (_checkUIReadyForOperation())
+        return;
 
     //
 
@@ -179,18 +169,18 @@ void UI::_reportFocalLengths()
 //-----------------------------------------------------------------
 errorCodes UI::_displayLensConversation()
 {
-    if (the_lens_manager == NULL)
-        _reportError(UI_LENS_MAN_UNSET);
-
-    if (the_serial_port == NULL)
-        _reportError(UI_SERIAL_PORT_UNSET);
+    if (_checkUIReadyForOperation())
+        return;
 
     //
 
     lensConversation conv;
 
     if (errorCodes err = the_lens_manager->getLensConversation(conv))
+    {
         _reportError(err);
+        return;
+    }
 
     _addHrule();
     the_serial_port->print("->the_lens_port: ");
@@ -225,76 +215,100 @@ errorCodes UI::_displayLensConversation()
 }
 
 //-----------------------------------------------------------------
+// Class Definition: inputs
+//-----------------------------------------------------------------
+
+bool UI::_allModifierSwitchesUnpressed()
+{
+    bool flag = true;
+
+    flag = flag && (set_switch.getState() == UNPRESSED);
+    flag = flag && (hold_switch.getState() == UNPRESSED);
+    flag = flag && (av_switch.getState() == UNPRESSED);
+
+    return flag;
+}
+
+//-----------------------------------------------------------------
 // Class Definition: operations
 //-----------------------------------------------------------------
 
-void UI::_checkUIReadyForOperation()
+int UI::_checkUIReadyForOperation()
 {
     if (the_lens_manager == NULL)
+    {
         _reportError(UI_LENS_MAN_UNSET);
+        return 1;
+    }
 
     if (the_serial_port == NULL)
+    {
         _reportError(UI_SERIAL_PORT_UNSET);
+        return 1;
+    }
+
+    return 0;
 }
 
 //-----------------------------------------------------------------
 void UI::_gotoFocalDistancePlus()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     //
 
-    status_led.turnOff();
-
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
     if (errorCodes err = the_fd_manager->gotoFocalDistancePlus())
+    {
         _reportError(err);
+        return;
+    }
 
     //
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    {
         _reportError(err);
+        return;
+    }
 
     the_serial_port->println("Moved to + focal distance: " + String(fd));
-
-    while (plus_switch.getState() == PRESSED)
-        ;
-
-    status_led.turnOn();
 }
 
 //-----------------------------------------------------------------
 void UI::_gotoFocalDistanceMinus()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     //
 
-    status_led.turnOff();
-
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
     if (errorCodes err = the_fd_manager->gotoFocalDistanceMinus())
+    {
         _reportError(err);
+        return;
+    }
 
     //
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    {
         _reportError(err);
+        return;
+    }
 
     the_serial_port->println("Moved to - focal distance: " + String(fd));
-
-    while (minus_switch.getState() == PRESSED)
-        ;
-
-    status_led.turnOn();
 }
 
 //-----------------------------------------------------------------
 void UI::_setFocalDistanceMemoryMinus()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     //
 
@@ -302,21 +316,19 @@ void UI::_setFocalDistanceMemoryMinus()
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    {
         _reportError(err);
+        return;
+    }
 
     the_fd_manager->setFocalDistanceMemoryMinus(fd);
-
-    status_led.turnOff();
-    while ((minus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
-        ;
-
-    _displayFocalDistanceMemorySet();
 }
 
 //-----------------------------------------------------------------
 void UI::_setFocalDistanceMemoryPlus()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     //
 
@@ -324,21 +336,19 @@ void UI::_setFocalDistanceMemoryPlus()
 
     int fd;
     if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    {
         _reportError(err);
+        return;
+    }
 
     the_fd_manager->setFocalDistanceMemoryPlus(fd);
-
-    status_led.turnOff();
-    while ((plus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
-        ;
-
-    _displayFocalDistanceMemorySet();
 }
 
 //-----------------------------------------------------------------
 void UI::_reportApertureValue()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     apertureManagerInterface *the_av_manager = the_lens_manager->getApertureManager();
 
@@ -352,7 +362,10 @@ void UI::_reportApertureValue()
     else if (err = AV_AV_UNKNOWN)
         msg = "Aperture value: unknown";
     else
+    {
         _reportError(err);
+        return;
+    }
 
     the_serial_port->println(msg);
 }
@@ -360,12 +373,16 @@ void UI::_reportApertureValue()
 //-----------------------------------------------------------------
 void UI::_apertureOpenOneStep()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     apertureManagerInterface *the_av_manager = the_lens_manager->getApertureManager();
 
     if (errorCodes err = the_av_manager->openOneStep())
+    {
         _reportError(err);
+        return;
+    }
 
     _reportApertureValue();
 }
@@ -373,12 +390,16 @@ void UI::_apertureOpenOneStep()
 //-----------------------------------------------------------------
 void UI::_apertureCloseOneStep()
 {
-    _checkUIReadyForOperation();
+    if (_checkUIReadyForOperation())
+        return;
 
     apertureManagerInterface *the_av_manager = the_lens_manager->getApertureManager();
 
     if (errorCodes err = the_av_manager->closeOneStep())
+    {
         _reportError(err);
+        return;
+    }
 
     _reportApertureValue();
 }
@@ -388,10 +409,12 @@ void UI::_apertureCloseOneStep()
 //-----------------------------------------------------------------
 void UI::initLens()
 {
-    _checkUIReadyForOperation();
-    _displayNotReady();
+    if (_checkUIReadyForOperation())
+        return;
 
     //
+
+    _displayNotReady();
 
     if (hold_switch.getState() == PRESSED)
     {
@@ -420,23 +443,76 @@ void UI::initLens()
 //-----------------------------------------------------------------
 void UI::update()
 {
-    if ((plus_switch.getState() == PRESSED) && (set_switch.getState() == UNPRESSED))
+    if ((plus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
+    {
+        status_led.turnOff();
+
         _gotoFocalDistancePlus();
 
-    if ((minus_switch.getState() == PRESSED) && (set_switch.getState() == UNPRESSED))
+        while (plus_switch.getState() == PRESSED)
+            delayMicroseconds(10);
+
+        status_led.turnOn();
+    }
+
+    if ((minus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
+    {
+        status_led.turnOff();
+
         _gotoFocalDistanceMinus();
 
+        while (minus_switch.getState() == PRESSED)
+            delayMicroseconds(10);
+
+        status_led.turnOn();
+    }
+
     if ((plus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+
         _setFocalDistanceMemoryPlus();
 
+        while ((plus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
+            delayMicroseconds(10);
+
+        _displayFocalDistanceMemorySet();
+    }
+
     if ((minus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+
         _setFocalDistanceMemoryMinus();
 
+        while ((minus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
+            delayMicroseconds(10);
+
+        _displayFocalDistanceMemorySet();
+    }
+
     if ((plus_switch.getState() == PRESSED) && (av_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+
         _apertureOpenOneStep();
 
+        while ((plus_switch.getState() == PRESSED) || (av_switch.getState() == PRESSED))
+            delayMicroseconds(10);
+
+        status_led.turnOn();
+    }
+
     if ((minus_switch.getState() == PRESSED) && (av_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
         _apertureCloseOneStep();
+
+        while ((minus_switch.getState() == PRESSED) || (av_switch.getState() == PRESSED))
+            delayMicroseconds(10);
+
+        status_led.turnOn();
+    }
 
     // get commamnds from serial port
 

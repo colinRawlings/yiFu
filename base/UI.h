@@ -51,9 +51,10 @@ private:
   void _reportApertureValue();
 
   // inputs
+  bool _allModifierSwitchesUnpressed();
 
   // operations
-  void _checkUIReadyForOperation();
+  int _checkUIReadyForOperation();
 
   void _gotoFocalDistancePlus();
   void _gotoFocalDistanceMinus();
