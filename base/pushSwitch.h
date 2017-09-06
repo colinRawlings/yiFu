@@ -5,22 +5,27 @@
 
 enum pushSwitchState : uint8_t
 {
-    UNPRESSED = 0,
-    PRESSED
+  UNPRESSED = 0,
+  PRESSED
 };
 
 class pushSwitch
 {
-  private:
-    uint8_t pin;
-    bool pullUp;
+private:
+  uint8_t pin;
+  bool pullUp;
 
-  public:
+  unsigned long T_lastRead_ms;
+  pushSwitchState lastState;
 
-    pushSwitch(uint8_t pin_, bool pullUp_);
-    ~pushSwitch();
+private:
+  pushSwitchState _getCurrentState();
 
-    pushSwitchState getState();
+public:
+  pushSwitch(uint8_t pin_, bool pullUp_);
+  ~pushSwitch();
+
+  pushSwitchState getState();
 };
 
 #endif //_PUSH_SWITCH_H
