@@ -49,7 +49,7 @@ errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
 
     //
 
-    Serial.print("here I would try to change the aperture");
+    Serial.println("here I would try to change the aperture");
 
     if (err != SUCCESS)
     {

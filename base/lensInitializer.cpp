@@ -323,7 +323,7 @@ errorCodes lensInitializer::resetLens()
 
     _turnOffPower();
 
-    delay(DT_TIME_OFF_INIT_LENS_MS);
+    delay(DT_TIME_OFF_RESET_LENS_MS);
 
     _turnOnPower();
 

@@ -23,6 +23,8 @@ lensManager::lensManager()
     the_fd_manager.setTheLensPort(&the_lens_port);
     the_lens_initializer.setTheLensPort(&the_lens_port);
     the_av_manager.setTheLensPort(&the_lens_port);
+
+    the_av_manager.setTheLensInitializer(&the_lens_initializer);
 }
 
 //-----------------------------------------------------------------
