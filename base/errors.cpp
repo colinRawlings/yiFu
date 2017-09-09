@@ -16,6 +16,9 @@ String errorCodeToString(errorCodes theErrorCode)
     case LENS_PORT_NO_ANSWER_AVAILABLE:
         return "LENS_PORT_NO_ANSWER_AVAILABLE";
 
+    case LENS_MAN_BAD_MSG_SPEED:
+        return "LENS_MAN_BAD_MSG_SPEED";
+
     case LENS_INIT_LENS_PORT_UNSET:
         return "LENS_INIT_LENS_PORT_UNSET";
     case LENS_INIT_BAD_CR_LENGTH:
@@ -33,6 +36,18 @@ String errorCodeToString(errorCodes theErrorCode)
         return "UI_LENS_MAN_UNSET";
     case UI_SERIAL_PORT_UNSET:
         return "UI_SERIAL_PORT_UNSET";
+    case UI_PARSE_SERIAL_NO_SPEED_CODE:
+        return "UI_PARSE_SERIAL_NO_SPEED_CODE";
+    case UI_PARSE_SERIAL_INCOMPLETE_MSG:
+        return "UI_PARSE_SERIAL_INCOMPLETE_MSG";
+    case UI_PARSE_SERIAL_NOT_HEX_CODE:
+        return "UI_PARSE_SERIAL_NOT_HEX_CODE";
+    case UI_PARSE_SERIAL_MSG_TOO_LONG:
+        return "UI_PARSE_SERIAL_MSG_TOO_LONG";
+    case UI_PARSE_SERIAL_MISSING_SEPARATOR:
+        return "UI_PARSE_SERIAL_MISSING_SEPARATOR";
+    case UI_NOT_READY:
+        return "UI_NOT_READY";
 
     case UTILS_TOO_BIT_BIT_OF_BYTE:
         return "UTILS_TOO_BIT_BIT_OF_BYTE";

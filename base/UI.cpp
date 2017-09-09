@@ -13,11 +13,12 @@
 #include "errors.h"
 
 #include "Arduino.h"
+#include <ctype.h>
 
 //-----------------------------------------------------------------
 // Class Definition: init
 //-----------------------------------------------------------------
-UI::UI(bool echoOn_)
+UI::UI()
     : status_led(LEDStatusPin, invertedLEDs),
       error_led(LEDErrPin, invertedLEDs, ERR_TIMEOUT_US),
       set_switch(switchSetPin, invertedSwitches),
@@ -28,8 +29,6 @@ UI::UI(bool echoOn_)
 {
     the_lens_manager = NULL;
     the_serial_port = NULL;
-
-    echoOn = echoOn_;
 }
 
 //-----------------------------------------------------------------
@@ -118,6 +117,7 @@ void UI::_reportError(errorCodes theErrorCode)
 {
     error_led.activate();
     _printErrorCode(theErrorCode);
+    _addEndComm();
 }
 
 //-----------------------------------------------------------------
@@ -145,6 +145,12 @@ void UI::_addHrule()
 }
 
 //-----------------------------------------------------------------
+void UI::_addEndComm()
+{
+    the_serial_port->println("----------------END");
+}
+
+//-----------------------------------------------------------------
 void UI::_reportFocalLengths()
 {
     if (_checkUIReadyForOperation())
@@ -167,10 +173,10 @@ void UI::_reportFocalLengths()
 }
 
 //-----------------------------------------------------------------
-errorCodes UI::_displayLensConversation()
+int UI::_displayLensConversation()
 {
     if (_checkUIReadyForOperation())
-        return;
+        return 1;
 
     //
 
@@ -179,11 +185,11 @@ errorCodes UI::_displayLensConversation()
     if (errorCodes err = the_lens_manager->getLensConversation(conv))
     {
         _reportError(err);
-        return;
+        return 1;
     }
 
     _addHrule();
-    the_serial_port->print("->the_lens_port: ");
+    the_serial_port->print("MOSI: ");
 
     _writeHexSequenceToSerial(conv.msg, conv.msgLength);
 
@@ -192,26 +198,32 @@ errorCodes UI::_displayLensConversation()
     if (!conv.answerAvailable)
     {
         the_serial_port->println("No answer available");
-        return;
+        return 1;
     }
 
-    the_serial_port->print("<-the_lens_port: ");
+    the_serial_port->print("MISO: ");
 
     _writeHexSequenceToSerial(conv.answer, conv.msgLength);
 
     switch (conv.speed)
     {
     case SLOW:
+    {
         the_serial_port->println("(slow mode)");
+        break;
+    }
     case FAST:
+    {
         the_serial_port->println("(fast mode)");
+        break;
+    }
     }
 
-    _addHrule();
+    _addEndComm();
 
     //
 
-    return SUCCESS;
+    return 0;
 }
 
 //-----------------------------------------------------------------
@@ -405,6 +417,160 @@ void UI::_apertureCloseOneStep()
 }
 
 //-----------------------------------------------------------------
+void UI::_sendSerialPortCommandToLens()
+{
+    if (_checkUIReadyForOperation())
+        return;
+
+    errorCodes err;
+
+    //
+
+    lensCommand cmd;
+
+    if (err = _parseSerialPortInput(cmd))
+    {
+        _reportError(err);
+        return;
+    }
+
+    //
+
+    _addHrule();
+
+    the_serial_port->print("Serial port request to send ");
+    if (cmd.speed == FAST)
+        the_serial_port->println("fast message:");
+    else if (cmd.speed == SLOW)
+        the_serial_port->println("slow message:");
+
+    _writeHexSequenceToSerial(cmd.msg, cmd.msgLength);
+
+    _addHrule();
+
+    //
+
+    if (err = the_lens_manager->sendLensCommand(cmd))
+    {
+        _reportError(err);
+        return;
+    }
+
+    if (err = _displayLensConversation())
+        return;
+}
+
+//-----------------------------------------------------------------
+errorCodes UI::_parseSerialPortInput(lensCommand &cmd)
+{
+
+    errorCodes err;
+
+    cmd.msg[0] = 0x00;
+    cmd.msgLength = 0;
+    cmd.speed = SLOW;
+
+    //
+
+    char speedChar = the_serial_port->read();
+    if (speedChar == '+')
+        cmd.speed = FAST;
+    else if (speedChar == '-')
+        cmd.speed = SLOW;
+    else
+    {
+        _emptySerialInputBuffer();
+        return UI_PARSE_SERIAL_NO_SPEED_CODE;
+    }
+
+    //
+
+    char inputChar;
+    int lowNibble;
+    int highNibble;
+
+    while (the_serial_port->available() > 0)
+    {
+        if (the_serial_port->available() < 2)
+        {
+            _emptySerialInputBuffer();
+            return UI_PARSE_SERIAL_INCOMPLETE_MSG;
+        }
+
+        //
+
+        inputChar = the_serial_port->read();
+        if (err = _charToNibble(inputChar, highNibble))
+        {
+            _emptySerialInputBuffer();
+            return err;
+        }
+
+        inputChar = the_serial_port->read();
+        if (err = _charToNibble(inputChar, lowNibble))
+        {
+            _emptySerialInputBuffer();
+            return err;
+        }
+
+        cmd.msgLength++;
+        if (cmd.msgLength > LENS_BUFFER_LENGTH)
+        {
+            _emptySerialInputBuffer();
+            return UI_PARSE_SERIAL_MSG_TOO_LONG;
+        }
+        cmd.msg[cmd.msgLength - 1] = 16 * highNibble + lowNibble;
+
+        //
+
+        if (the_serial_port->available() == 0)
+            break;
+
+        //
+
+        inputChar = the_serial_port->read();
+
+        if (inputChar == '\r')
+            break;
+
+        if (inputChar != ',')
+        {
+            _emptySerialInputBuffer();
+            return UI_PARSE_SERIAL_MISSING_SEPARATOR;
+        }
+    }
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+void UI::_emptySerialInputBuffer()
+{
+    while (the_serial_port->available() > 0)
+        the_serial_port->read();
+}
+
+//-----------------------------------------------------------------
+errorCodes UI::_charToNibble(char c, int &val)
+{
+    val = 0;
+
+    if (isalpha(c))
+    {
+        c = toupper(c);
+        val = c - 'A' + 10;
+    }
+    else
+    {
+        val = c - '0';
+        if (val < 0 || val > 9)
+            return UI_PARSE_SERIAL_NOT_HEX_CODE;
+    }
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
 // Class methods: public
 //-----------------------------------------------------------------
 void UI::initLens()
@@ -443,6 +609,11 @@ void UI::initLens()
 //-----------------------------------------------------------------
 void UI::update()
 {
+    if (the_serial_port->available() > 0)
+    {
+        _sendSerialPortCommandToLens();
+    }
+
     if ((plus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
     {
         status_led.turnOff();

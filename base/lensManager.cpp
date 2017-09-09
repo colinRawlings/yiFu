@@ -48,6 +48,31 @@ apertureManagerInterface *lensManager::getApertureManager()
 }
 
 //-----------------------------------------------------------------
+errorCodes lensManager::sendLensCommand(lensCommand cmd)
+{
+    errorCodes err;
+
+    if (err = the_lens_port.setMsg(cmd.msg, cmd.msgLength))
+        return err;
+
+    //
+
+    if (cmd.speed == SLOW)
+        err = the_lens_port.sendSlowMsg();
+    else if (cmd.speed == FAST)
+        err = the_lens_port.sendFastMsg();
+    else
+        err = LENS_MAN_BAD_MSG_SPEED;
+
+    if (err != SUCCESS)
+        return err;
+
+    //
+
+    return SUCCESS;
+}
+
+//-----------------------------------------------------------------
 errorCodes lensManager::getLensConversation(lensConversation &conv)
 {
     errorCodes err;
@@ -63,4 +88,6 @@ errorCodes lensManager::getLensConversation(lensConversation &conv)
 
     if (err = the_lens_port.getMsgSpeed(conv.speed))
         return err;
+
+    return SUCCESS;
 }

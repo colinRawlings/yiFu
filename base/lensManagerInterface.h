@@ -12,6 +12,17 @@ class lensInitializerInterface;
 class focalDistanceManagerInterface;
 class apertureManagerInterface;
 
+//-----------------------------------------------------------------
+// structs
+//-----------------------------------------------------------------
+struct lensCommand
+{
+  byte msg[LENS_BUFFER_LENGTH];
+  unsigned int msgLength;
+  msgSpeed speed;
+};
+
+//-----------------------------------------------------------------
 struct lensConversation
 {
   byte msg[LENS_BUFFER_LENGTH];
@@ -22,6 +33,9 @@ struct lensConversation
   msgSpeed speed;
 };
 
+//-----------------------------------------------------------------
+// Class
+//-----------------------------------------------------------------
 class lensManagerInterface
 {
 public:
@@ -29,6 +43,7 @@ public:
   virtual focalDistanceManagerInterface *getFocalDistanceManager() = 0;
   virtual apertureManagerInterface *getApertureManager() = 0;
 
+  virtual errorCodes sendLensCommand(lensCommand cmd) = 0;
   virtual errorCodes getLensConversation(lensConversation &conv) = 0;
 };
 
