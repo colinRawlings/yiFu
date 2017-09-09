@@ -14,21 +14,33 @@
 //-----------------------------------------------------------------
 void initSerialPort()
 {
-    Serial.begin(115200);
-    delay(1000);
-    Serial.println("Initialising the serial port ...");
-    delay(1000);
-    Serial.println("/");
-    delay(1000);
-    Serial.println("Initialised the serial port.");
-}
+    String initMsg = "";
 
-//-----------------------------------------------------------------
+    Serial.begin(115200);
+
+    //
+
+    unsigned long T0 = millis();
+    while (!Serial)
+    {
+        delayMicroseconds(10);
+
+        if ((millis() - T0) > DT_WAIT_FOR_SERIAL_PORT_MS)
+            return; // give up
+    }
+
+    delayMicroseconds(DT_INIT_SERIAL_WAIT_VSCODE_TEST_MSG);
+
+    while (Serial.available() > 0)
+        initMsg += (char)Serial.read();
+
+    Serial.println("Initialised the serial port, received: '" + initMsg + "'");
+}
 
 //-----------------------------------------------------------------
 // Main
 //-----------------------------------------------------------------
-UIInterface *the_ui = new UI(true);
+UIInterface *the_ui = new UI();
 lensManagerInterface *the_lens_manager = new lensManager();
 
 //-----------------------------------------------------------------

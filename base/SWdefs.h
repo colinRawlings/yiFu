@@ -2,6 +2,13 @@
 #define _SW_DEFS_H
 
 //-----------------------------------------------------------------
+// Serial port
+//-----------------------------------------------------------------
+
+#define DT_WAIT_FOR_SERIAL_PORT_MS 2000         // wait this long for the serial port to start
+#define DT_INIT_SERIAL_WAIT_VSCODE_TEST_MSG 100 // normally arrives after 8 us
+
+//-----------------------------------------------------------------
 // pushSwitch
 //-----------------------------------------------------------------
 
