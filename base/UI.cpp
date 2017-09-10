@@ -230,17 +230,6 @@ int UI::_displayLensConversation()
 // Class Definition: inputs
 //-----------------------------------------------------------------
 
-bool UI::_allModifierSwitchesUnpressed()
-{
-    bool flag = true;
-
-    flag = flag && (set_switch.getState() == UNPRESSED);
-    flag = flag && (hold_switch.getState() == UNPRESSED);
-    flag = flag && (av_switch.getState() == UNPRESSED);
-
-    return flag;
-}
-
 //-----------------------------------------------------------------
 // Class Definition: operations
 //-----------------------------------------------------------------
@@ -417,6 +406,8 @@ void UI::_apertureCloseOneStep()
 }
 
 //-----------------------------------------------------------------
+// serial port command
+//-----------------------------------------------------------------
 void UI::_sendSerialPortCommandToLens()
 {
     if (_checkUIReadyForOperation())
@@ -531,7 +522,10 @@ errorCodes UI::_parseSerialPortInput(lensCommand &cmd)
         inputChar = the_serial_port->read();
 
         if (inputChar == '\r')
+        {
+            _emptySerialInputBuffer();
             break;
+        }
 
         if (inputChar != ',')
         {
@@ -546,8 +540,12 @@ errorCodes UI::_parseSerialPortInput(lensCommand &cmd)
 //-----------------------------------------------------------------
 void UI::_emptySerialInputBuffer()
 {
+    the_serial_port->print("discarding serial input: ");
+
     while (the_serial_port->available() > 0)
-        the_serial_port->read();
+        the_serial_port->print((char)the_serial_port->read());
+
+    the_serial_port->println(".");
 }
 
 //-----------------------------------------------------------------
@@ -568,6 +566,105 @@ errorCodes UI::_charToNibble(char c, int &val)
     }
 
     return SUCCESS;
+}
+
+//-----------------------------------------------------------------
+// check inputs
+//-----------------------------------------------------------------
+
+bool UI::_allModifierSwitchesUnpressed()
+{
+    bool flag = true;
+
+    flag = flag && (set_switch.getState() == UNPRESSED);
+    flag = flag && (hold_switch.getState() == UNPRESSED);
+    flag = flag && (av_switch.getState() == UNPRESSED);
+
+    return flag;
+}
+
+//-----------------------------------------------------------------
+void UI::_checkSwitches()
+{
+    if ((plus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
+    {
+        status_led.turnOff();
+
+        _gotoFocalDistancePlus();
+
+        while (plus_switch.getState() == PRESSED)
+            update();
+
+        status_led.turnOn();
+    }
+
+    if ((minus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
+    {
+        status_led.turnOff();
+
+        _gotoFocalDistanceMinus();
+
+        while (minus_switch.getState() == PRESSED)
+            update();
+
+        status_led.turnOn();
+    }
+
+    if ((plus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+
+        _setFocalDistanceMemoryPlus();
+
+        while ((plus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
+            update();
+
+        _displayFocalDistanceMemorySet();
+    }
+
+    if ((minus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+
+        _setFocalDistanceMemoryMinus();
+
+        while ((minus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
+            update();
+
+        _displayFocalDistanceMemorySet();
+    }
+
+    if ((plus_switch.getState() == PRESSED) && (av_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+
+        _apertureOpenOneStep();
+
+        while ((plus_switch.getState() == PRESSED) || (av_switch.getState() == PRESSED))
+            update();
+
+        status_led.turnOn();
+    }
+
+    if ((minus_switch.getState() == PRESSED) && (av_switch.getState() == PRESSED))
+    {
+        status_led.turnOff();
+        _apertureCloseOneStep();
+
+        while ((minus_switch.getState() == PRESSED) || (av_switch.getState() == PRESSED))
+            update();
+
+        status_led.turnOn();
+    }
+}
+
+//-----------------------------------------------------------------
+void UI::_checkSerialPort()
+{
+    if (the_serial_port->available() > 0)
+    {
+        _sendSerialPortCommandToLens();
+    }
 }
 
 //-----------------------------------------------------------------
@@ -607,85 +704,14 @@ void UI::initLens()
 }
 
 //-----------------------------------------------------------------
+void UI::checkInputs()
+{
+    _checkSerialPort();
+    _checkSwitches();
+}
+
+//-----------------------------------------------------------------
 void UI::update()
 {
-    if (the_serial_port->available() > 0)
-    {
-        _sendSerialPortCommandToLens();
-    }
-
-    if ((plus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
-    {
-        status_led.turnOff();
-
-        _gotoFocalDistancePlus();
-
-        while (plus_switch.getState() == PRESSED)
-            delayMicroseconds(10);
-
-        status_led.turnOn();
-    }
-
-    if ((minus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
-    {
-        status_led.turnOff();
-
-        _gotoFocalDistanceMinus();
-
-        while (minus_switch.getState() == PRESSED)
-            delayMicroseconds(10);
-
-        status_led.turnOn();
-    }
-
-    if ((plus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
-    {
-        status_led.turnOff();
-
-        _setFocalDistanceMemoryPlus();
-
-        while ((plus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
-            delayMicroseconds(10);
-
-        _displayFocalDistanceMemorySet();
-    }
-
-    if ((minus_switch.getState() == PRESSED) && (set_switch.getState() == PRESSED))
-    {
-        status_led.turnOff();
-
-        _setFocalDistanceMemoryMinus();
-
-        while ((minus_switch.getState() == PRESSED) || (set_switch.getState() == PRESSED))
-            delayMicroseconds(10);
-
-        _displayFocalDistanceMemorySet();
-    }
-
-    if ((plus_switch.getState() == PRESSED) && (av_switch.getState() == PRESSED))
-    {
-        status_led.turnOff();
-
-        _apertureOpenOneStep();
-
-        while ((plus_switch.getState() == PRESSED) || (av_switch.getState() == PRESSED))
-            delayMicroseconds(10);
-
-        status_led.turnOn();
-    }
-
-    if ((minus_switch.getState() == PRESSED) && (av_switch.getState() == PRESSED))
-    {
-        status_led.turnOff();
-        _apertureCloseOneStep();
-
-        while ((minus_switch.getState() == PRESSED) || (av_switch.getState() == PRESSED))
-            delayMicroseconds(10);
-
-        status_led.turnOn();
-    }
-
-    // get commamnds from serial port
-
     error_led.update();
 }

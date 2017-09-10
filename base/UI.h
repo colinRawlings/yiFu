@@ -35,7 +35,6 @@ private:
   void _addEndComm();
 
   int _displayLensConversation();
-  void _reportError(errorCodes theErrorCode);
   void _displayStartupError();
   void _displayEndStop();
 
@@ -43,11 +42,16 @@ private:
   void _displayReady();
   void _displayFocalDistanceMemorySet();
 
+  void _reportError(errorCodes theErrorCode);
   void _reportFocalLengths();
   void _reportApertureValue();
 
-  // inputs
+  // check inputs
   bool _allModifierSwitchesUnpressed();
+  void _checkSerialPort();
+  void _checkSwitches();
+
+  // serial port commands
   errorCodes _parseSerialPortInput(lensCommand &cmd);
   errorCodes _charToNibble(char c, int &val);
   void _emptySerialInputBuffer();
@@ -66,6 +70,8 @@ private:
 
   void _sendSerialPortCommandToLens();
 
+  //
+
 public:
   UI();
 
@@ -74,6 +80,7 @@ public:
 
   void initLens();
 
+  void checkInputs();
   void update();
 };
 

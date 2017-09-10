@@ -57,5 +57,6 @@ void setup()
 //-----------------------------------------------------------------
 void loop()
 {
+    the_ui->checkInputs();
     the_ui->update();
 }

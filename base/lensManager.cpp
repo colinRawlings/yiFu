@@ -80,11 +80,18 @@ errorCodes lensManager::getLensConversation(lensConversation &conv)
     if (err = the_lens_port.getMsg(conv.msg, conv.msgLength))
         return err;
 
+    //
+
     err = the_lens_port.getAnswer(conv.answer, conv.msgLength);
     if (err == LENS_PORT_NO_ANSWER_AVAILABLE)
         conv.answerAvailable = false;
-    else if (err != SUCCESS)
+    else
+        conv.answerAvailable = true;
+
+    if ((err != SUCCESS) && (err != LENS_PORT_NO_ANSWER_AVAILABLE))
         return err;
+
+    //
 
     if (err = the_lens_port.getMsgSpeed(conv.speed))
         return err;

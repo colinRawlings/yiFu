@@ -14,6 +14,7 @@ public:
 
   virtual void initLens() = 0;
 
+  virtual void checkInputs() = 0;
   virtual void update() = 0;
 };
 
