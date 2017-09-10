@@ -65,6 +65,8 @@ private:
   void _setFocalDistanceMemoryPlus();
   void _setFocalDistanceMemoryMinus();
 
+  void _holdFocalDistance();
+
   void _apertureOpenOneStep();
   void _apertureCloseOneStep();
 

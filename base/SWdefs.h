@@ -27,7 +27,7 @@
 // lensInitializer
 //-----------------------------------------------------------------
 
-#define DT_TIME_OFF_RESET_LENS_MS 3000
+#define DT_TIME_OFF_RESET_LENS_MS 100
 
 //-----------------------------------------------------------------
 // lensManager

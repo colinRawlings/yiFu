@@ -404,6 +404,30 @@ void UI::_apertureCloseOneStep()
 
     _reportApertureValue();
 }
+//-----------------------------------------------------------------
+void UI::_holdFocalDistance()
+{
+    if (_checkUIReadyForOperation())
+        return;
+
+    focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
+
+    int holdFD;
+    if (errorCodes err = the_fd_manager->getFocalDistance(holdFD))
+    {
+        _reportError(err);
+        return;
+    }
+
+    while (hold_switch.getState() == PRESSED)
+    {
+        if (errorCodes err = the_fd_manager->setFocalDistance(holdFD))
+        {
+            _reportError(err);
+            return;
+        }
+    }
+}
 
 //-----------------------------------------------------------------
 // serial port command
@@ -586,6 +610,18 @@ bool UI::_allModifierSwitchesUnpressed()
 //-----------------------------------------------------------------
 void UI::_checkSwitches()
 {
+    if (hold_switch.getState() == PRESSED)
+    {
+        status_led.turnOff();
+
+        _holdFocalDistance();
+
+        while (hold_switch.getState() == PRESSED)
+            update();
+
+        status_led.turnOn();
+    }
+
     if ((plus_switch.getState() == PRESSED) && _allModifierSwitchesUnpressed())
     {
         status_led.turnOff();

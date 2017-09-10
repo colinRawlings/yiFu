@@ -40,6 +40,7 @@ errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
 {
 
     errorCodes err;
+    errorCodes err2;
 
     if (the_lens_initializer == NULL)
         return AV_LENS_INITIALIZER_UNSET;
@@ -49,18 +50,46 @@ errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
 
     //
 
-    Serial.println("here I would try to change the aperture");
+    unsigned int msgLength = 4;
+    uint8_t msg[msgLength];
+    uint8_t answer[msgLength];
+    unsigned int answerLength = 0;
 
-    if (err != SUCCESS)
+    if (cmd == OPEN_ONE_STEP)
     {
-        errorCodes err2 = the_lens_initializer->resetLens();
-        return err;
+        msg[0] = 0x13;
+        msg[1] = 0x03;
+        msg[2] = 0x13;
+        msg[3] = 0x03;
     }
+    else if (cmd == CLOSE_ONE_STEP)
+    {
+        msg[0] = 0x13;
+        msg[1] = 0xFD;
+        msg[2] = 0x13;
+        msg[3] = 0xFD;
+    }
+    else if (cmd == OPEN_FULLY)
+    {
+        Serial.println("TODO OPEN_FULLY");
+        return SUCCESS;
+    }
+
+    if (err = the_lens_port->setMsg(msg, msgLength))
+        return err;
+
+    err = the_lens_port->sendSlowMsg();
+    err2 = the_lens_initializer->resetLens();
 
     //
 
-    if (err = the_lens_initializer->resetLens())
+    if (err != SUCCESS)
         return err;
+
+    if (err2 != SUCCESS)
+        return err2;
+
+    //
 
     return SUCCESS;
 }
