@@ -40,7 +40,6 @@ void UI::setLensManager(lensManagerInterface *the_lens_manager_)
 //-----------------------------------------------------------------
 void UI::setSerialPort(Stream *the_serial_port_)
 {
-
     the_serial_port = the_serial_port_;
     the_serial_port->println("UI added the serial port");
 }
@@ -106,14 +105,14 @@ void UI::_displayReady()
 
 //-----------------------------------------------------------------
 
-void UI::_printErrorCode(errorCodes theErrorCode)
+void UI::_printErrorCode(errorCode theErrorCode)
 {
     String msg = errorCodeToString(theErrorCode);
     the_serial_port->println("Error: " + msg);
 }
 
 //-----------------------------------------------------------------
-void UI::_reportError(errorCodes theErrorCode)
+void UI::_reportError(errorCode theErrorCode)
 {
     error_led.activate();
     _printErrorCode(theErrorCode);
@@ -182,7 +181,7 @@ int UI::_displayLensConversation()
 
     lensConversation conv;
 
-    if (errorCodes err = the_lens_manager->getLensConversation(conv))
+    if (errorCode err = the_lens_manager->getLensConversation(conv))
     {
         _reportError(err);
         return 1;
@@ -260,7 +259,7 @@ void UI::_gotoFocalDistancePlus()
     //
 
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
-    if (errorCodes err = the_fd_manager->gotoFocalDistancePlus())
+    if (errorCode err = the_fd_manager->gotoFocalDistancePlus())
     {
         _reportError(err);
         return;
@@ -269,7 +268,7 @@ void UI::_gotoFocalDistancePlus()
     //
 
     int fd;
-    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    if (errorCode err = the_fd_manager->getFocalDistance(fd))
     {
         _reportError(err);
         return;
@@ -287,7 +286,7 @@ void UI::_gotoFocalDistanceMinus()
     //
 
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
-    if (errorCodes err = the_fd_manager->gotoFocalDistanceMinus())
+    if (errorCode err = the_fd_manager->gotoFocalDistanceMinus())
     {
         _reportError(err);
         return;
@@ -296,7 +295,7 @@ void UI::_gotoFocalDistanceMinus()
     //
 
     int fd;
-    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    if (errorCode err = the_fd_manager->getFocalDistance(fd))
     {
         _reportError(err);
         return;
@@ -316,7 +315,7 @@ void UI::_setFocalDistanceMemoryMinus()
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
 
     int fd;
-    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    if (errorCode err = the_fd_manager->getFocalDistance(fd))
     {
         _reportError(err);
         return;
@@ -336,7 +335,7 @@ void UI::_setFocalDistanceMemoryPlus()
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
 
     int fd;
-    if (errorCodes err = the_fd_manager->getFocalDistance(fd))
+    if (errorCode err = the_fd_manager->getFocalDistance(fd))
     {
         _reportError(err);
         return;
@@ -355,7 +354,7 @@ void UI::_reportApertureValue()
 
     unsigned int av;
 
-    errorCodes err = the_av_manager->getApertureValue_tics(av);
+    errorCode err = the_av_manager->getApertureValue_tics(av);
 
     String msg;
     if (err == SUCCESS)
@@ -379,7 +378,7 @@ void UI::_apertureOpenOneStep()
 
     apertureManagerInterface *the_av_manager = the_lens_manager->getApertureManager();
 
-    if (errorCodes err = the_av_manager->openOneStep())
+    if (errorCode err = the_av_manager->openOneStep())
     {
         _reportError(err);
         return;
@@ -396,7 +395,7 @@ void UI::_apertureCloseOneStep()
 
     apertureManagerInterface *the_av_manager = the_lens_manager->getApertureManager();
 
-    if (errorCodes err = the_av_manager->closeOneStep())
+    if (errorCode err = the_av_manager->closeOneStep())
     {
         _reportError(err);
         return;
@@ -413,7 +412,7 @@ void UI::_holdFocalDistance()
     focalDistanceManagerInterface *the_fd_manager = the_lens_manager->getFocalDistanceManager();
 
     int holdFD;
-    if (errorCodes err = the_fd_manager->getFocalDistance(holdFD))
+    if (errorCode err = the_fd_manager->getFocalDistance(holdFD))
     {
         _reportError(err);
         return;
@@ -421,7 +420,7 @@ void UI::_holdFocalDistance()
 
     while (hold_switch.getState() == PRESSED)
     {
-        if (errorCodes err = the_fd_manager->setFocalDistance(holdFD))
+        if (errorCode err = the_fd_manager->setFocalDistance(holdFD))
         {
             _reportError(err);
             return;
@@ -437,7 +436,7 @@ void UI::_sendSerialPortCommandToLens()
     if (_checkUIReadyForOperation())
         return;
 
-    errorCodes err;
+    errorCode err;
 
     //
 
@@ -476,10 +475,10 @@ void UI::_sendSerialPortCommandToLens()
 }
 
 //-----------------------------------------------------------------
-errorCodes UI::_parseSerialPortInput(lensCommand &cmd)
+errorCode UI::_parseSerialPortInput(lensCommand &cmd)
 {
 
-    errorCodes err;
+    errorCode err;
 
     cmd.msg[0] = 0x00;
     cmd.msgLength = 0;
@@ -573,7 +572,7 @@ void UI::_emptySerialInputBuffer()
 }
 
 //-----------------------------------------------------------------
-errorCodes UI::_charToNibble(char c, int &val)
+errorCode UI::_charToNibble(char c, int &val)
 {
     val = 0;
 
@@ -726,7 +725,7 @@ void UI::initLens()
 
     lensInitializerInterface *the_lens_initializer = the_lens_manager->getLensInitializer();
 
-    errorCodes err = the_lens_initializer->initLens();
+    errorCode err = the_lens_initializer->initLens();
 
     if (err != SUCCESS)
     {

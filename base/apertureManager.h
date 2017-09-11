@@ -26,18 +26,18 @@ private:
   bool apertureValueKnown;
 
 private:
-  errorCodes _executeApertureCommand(apertureCommand cmd);
+  errorCode _executeApertureCommand(apertureCommand cmd);
 
 public:
   apertureManager();
   void setTheLensPort(lensPortInterface *the_lens_port_);
   void setTheLensInitializer(lensInitializerInterface *the_lens_initializer_);
 
-  errorCodes openFully();
-  errorCodes openOneStep();
-  errorCodes closeOneStep();
+  errorCode openFully();
+  errorCode openOneStep();
+  errorCode closeOneStep();
 
-  errorCodes getApertureValue_tics(unsigned int &av_tics);
+  errorCode getApertureValue_tics(unsigned int &av_tics);
 };
 
 #endif //_APERTURE_MANAGER_H

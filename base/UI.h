@@ -30,7 +30,7 @@ private:
 private:
   // outputs
   void _writeHexSequenceToSerial(uint8_t sequence[], unsigned int msgLength);
-  void _printErrorCode(errorCodes theErrorCode);
+  void _printErrorCode(errorCode theErrorCode);
   void _addHrule();
   void _addEndComm();
 
@@ -42,7 +42,7 @@ private:
   void _displayReady();
   void _displayFocalDistanceMemorySet();
 
-  void _reportError(errorCodes theErrorCode);
+  void _reportError(errorCode theErrorCode);
   void _reportFocalLengths();
   void _reportApertureValue();
 
@@ -52,8 +52,8 @@ private:
   void _checkSwitches();
 
   // serial port commands
-  errorCodes _parseSerialPortInput(lensCommand &cmd);
-  errorCodes _charToNibble(char c, int &val);
+  errorCode _parseSerialPortInput(lensCommand &cmd);
+  errorCode _charToNibble(char c, int &val);
   void _emptySerialInputBuffer();
 
   // operations

@@ -11,46 +11,46 @@ class lensPortInterface;
 //-----------------------------------------------------------------
 struct focusStatus
 {
-    bool autoFocusMode;
-    bool focusMotorMoving;
-    bool focusMotorAccelerating;
-    bool focusMotorAtEndStop;
+  bool autoFocusMode;
+  bool focusMotorMoving;
+  bool focusMotorAccelerating;
+  bool focusMotorAtEndStop;
 };
 
 //-----------------------------------------------------------------
 class focalDistanceManager : public focalDistanceManagerInterface
 {
-  private:
-    int focalDistanceMemoryPlus;
-    bool focalDistanceMemoryPlusSet;
+private:
+  int focalDistanceMemoryPlus;
+  bool focalDistanceMemoryPlusSet;
 
-    int focalDistanceMemoryMinus;
-    bool focalDistanceMemoryMinusSet;
+  int focalDistanceMemoryMinus;
+  bool focalDistanceMemoryMinusSet;
 
-    lensPortInterface *the_lens_port;
+  lensPortInterface *the_lens_port;
 
-  private:
-    errorCodes _waitMoveComplete();
-    errorCodes _getStatus(focusStatus &status);
+private:
+  errorCode _waitMoveComplete();
+  errorCode _getStatus(focusStatus &status);
 
-  public:
-    focalDistanceManager();
+public:
+  focalDistanceManager();
 
-    void setTheLensPort(lensPortInterface *the_lens_port_);
+  void setTheLensPort(lensPortInterface *the_lens_port_);
 
-    errorCodes gotoMinFocalDistance();
-    errorCodes gotoInfFocalDistance();
+  errorCode gotoMinFocalDistance();
+  errorCode gotoInfFocalDistance();
 
-    void setFocalDistanceMemoryPlus(int focalDistance);
-    void setFocalDistanceMemoryMinus(int focalDistance);
+  void setFocalDistanceMemoryPlus(int focalDistance);
+  void setFocalDistanceMemoryMinus(int focalDistance);
 
-    errorCodes gotoFocalDistancePlus();
-    errorCodes gotoFocalDistanceMinus();
+  errorCode gotoFocalDistancePlus();
+  errorCode gotoFocalDistanceMinus();
 
-    errorCodes stepFocalDistance(int step);
-    errorCodes setFocalDistance(int focalDistance);
+  errorCode stepFocalDistance(int step);
+  errorCode setFocalDistance(int focalDistance);
 
-    errorCodes getFocalDistance(int &focalDistance);
+  errorCode getFocalDistance(int &focalDistance);
 };
 
 #endif // _FOCAL_DISTANCE_MANAGER_H

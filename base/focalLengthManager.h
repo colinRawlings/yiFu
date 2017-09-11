@@ -7,14 +7,14 @@ class lensPortInterface;
 
 class focalLengthManager : public focalLengthManagerInterface
 {
-  private:
-    lensPortInterface *the_lens_port;
+private:
+  lensPortInterface *the_lens_port;
 
-  public:
-    focalLengthManager();
+public:
+  focalLengthManager();
 
-    void setTheLensPort(lensPortInterface *the_lens_port);
-    errorCodes getFocalLength(int &focalLength);
+  void setTheLensPort(lensPortInterface *the_lens_port);
+  errorCode getFocalLength(int &focalLength);
 };
 
 #endif //_FOCAL_LENGTH_MANAGER_H

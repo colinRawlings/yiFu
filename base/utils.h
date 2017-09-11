@@ -5,6 +5,6 @@
 #include "Arduino.h"
 
 int convertBytesToInt(byte leastSignificantByte, byte mostSignificantByte);
-errorCodes bitOfByte(byte theByte, int theBit, bool &result);
+errorCode bitOfByte(byte theByte, int theBit, bool &result);
 
 #endif // _UTILS_H

@@ -10,7 +10,7 @@ int convertBytesToInt(byte leastSignificantByte, byte mostSignificantByte)
 }
 
 //-----------------------------------------------------------------
-errorCodes bitOfByte(byte theByte, int theBit, bool &result)
+errorCode bitOfByte(byte theByte, int theBit, bool &result)
 {
     if (theBit > 7)
     {

@@ -12,32 +12,32 @@ class lensPortInterface;
 
 class lensInitializer : public lensInitializerInterface
 {
-  private:
-    lensPortInterface *the_lens_port;
-    int FLmin_mm; // surrogate for lens ID
-    int FLmax_mm;
+private:
+  lensPortInterface *the_lens_port;
+  int FLmin_mm; // surrogate for lens ID
+  int FLmax_mm;
 
-  private:
-    void _initPower();
-    void _turnOnPower();
-    void _turnOffPower();
+private:
+  void _initPower();
+  void _turnOnPower();
+  void _turnOffPower();
 
-    errorCodes _sendCR(msgSpeed speed);
-    errorCodes _activateISControl();
-    errorCodes _activateTelePhotoMFControl();
-    errorCodes _activatePrimeMFControl();
-    errorCodes _activateLensControls();
-    errorCodes _activateLens();
+  errorCode _sendCR(msgSpeed speed);
+  errorCode _activateISControl();
+  errorCode _activateTelePhotoMFControl();
+  errorCode _activatePrimeMFControl();
+  errorCode _activateLensControls();
+  errorCode _activateLens();
 
-  public:
-    lensInitializer();
+public:
+  lensInitializer();
 
-    void setTheLensPort(lensPortInterface *the_lens_port_);
+  void setTheLensPort(lensPortInterface *the_lens_port_);
 
-    errorCodes initLens();
-    errorCodes resetLens();
+  errorCode initLens();
+  errorCode resetLens();
 
-    void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm);
+  void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm);
 };
 
 #endif // _LENS_INITIALIZER_H

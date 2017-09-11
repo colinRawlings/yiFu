@@ -36,11 +36,11 @@ void apertureManager::setTheLensInitializer(lensInitializerInterface *the_lens_i
 // Class Definition: Private
 //-----------------------------------------------------------------
 
-errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
+errorCode apertureManager::_executeApertureCommand(apertureCommand cmd)
 {
 
-    errorCodes err;
-    errorCodes err2;
+    errorCode err;
+    errorCode err2;
 
     if (the_lens_initializer == NULL)
         return AV_LENS_INITIALIZER_UNSET;
@@ -98,9 +98,9 @@ errorCodes apertureManager::_executeApertureCommand(apertureCommand cmd)
 // Class Definition: Public
 //-----------------------------------------------------------------
 
-errorCodes apertureManager::openFully()
+errorCode apertureManager::openFully()
 {
-    if (errorCodes err = _executeApertureCommand(OPEN_FULLY))
+    if (errorCode err = _executeApertureCommand(OPEN_FULLY))
         return err;
 
     //
@@ -110,9 +110,9 @@ errorCodes apertureManager::openFully()
 }
 
 //-----------------------------------------------------------------
-errorCodes apertureManager::openOneStep()
+errorCode apertureManager::openOneStep()
 {
-    if (errorCodes err = _executeApertureCommand(OPEN_ONE_STEP))
+    if (errorCode err = _executeApertureCommand(OPEN_ONE_STEP))
         return err;
 
     if (apertureValueKnown)
@@ -126,9 +126,9 @@ errorCodes apertureManager::openOneStep()
 }
 
 //-----------------------------------------------------------------
-errorCodes apertureManager::closeOneStep()
+errorCode apertureManager::closeOneStep()
 {
-    if (errorCodes err = _executeApertureCommand(CLOSE_ONE_STEP))
+    if (errorCode err = _executeApertureCommand(CLOSE_ONE_STEP))
         return err;
 
     if (apertureValueKnown)
@@ -142,7 +142,7 @@ errorCodes apertureManager::closeOneStep()
 }
 
 //-----------------------------------------------------------------
-errorCodes apertureManager::getApertureValue_tics(unsigned int &av_tics)
+errorCode apertureManager::getApertureValue_tics(unsigned int &av_tics)
 {
     av_tics = 0;
 

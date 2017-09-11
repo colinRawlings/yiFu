@@ -40,7 +40,7 @@ lensPort::lensPort()
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
+errorCode lensPort::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
 {
     /* send bytes with a 6us clock half duration.*/
 
@@ -94,7 +94,7 @@ errorCodes lensPort::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
 
     SPI_OUTPORT = (SPI_OUTPORT) | MOSI_byte; // put MOSI high again
 
-    if (errorCodes err = _waitForLens(DT_LENS_TIMEOUT_US))
+    if (errorCode err = _waitForLens(DT_LENS_TIMEOUT_US))
         return err;
 
     //--- calc val_MISO
@@ -108,7 +108,7 @@ errorCodes lensPort::_sendSlowByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::_sendFastByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
+errorCode lensPort::_sendFastByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
 {
     /* send bytes with a 0.5us clock half duration.*/
 
@@ -171,7 +171,7 @@ errorCodes lensPort::_sendFastByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
     NOP;
     SPI_OUTPORT = (SPI_OUTPORT) | MOSI_byte; // put MOSI high again
 
-    if (errorCodes err = _waitForLens(DT_LENS_TIMEOUT_US))
+    if (errorCode err = _waitForLens(DT_LENS_TIMEOUT_US))
         return err;
 
     //--- calc val_MISO
@@ -185,7 +185,7 @@ errorCodes lensPort::_sendFastByte(uint8_t val_tmp_MOSI, uint8_t &val_MISO)
 }
 
 //-----------------------------------------------------
-errorCodes lensPort::_waitForLens(unsigned long timeout_us)
+errorCode lensPort::_waitForLens(unsigned long timeout_us)
 {
 
     unsigned long T0; // timer value when ACK sequence started
@@ -233,7 +233,7 @@ errorCodes lensPort::_waitForLens(unsigned long timeout_us)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
+errorCode lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
 {
     msgAvailable = false;
     msgLength = 0;
@@ -253,7 +253,7 @@ errorCodes lensPort::setMsg(uint8_t msg[], unsigned int msgLength_)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::getMsg(uint8_t msg[], unsigned int &msgLength_)
+errorCode lensPort::getMsg(uint8_t msg[], unsigned int &msgLength_)
 {
 
     for (unsigned int p = 0; p < msgLength; p++)
@@ -265,7 +265,7 @@ errorCodes lensPort::getMsg(uint8_t msg[], unsigned int &msgLength_)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::getMsgLength(unsigned int &msgLength_)
+errorCode lensPort::getMsgLength(unsigned int &msgLength_)
 {
     msgLength_ = msgLength;
 
@@ -273,7 +273,7 @@ errorCodes lensPort::getMsgLength(unsigned int &msgLength_)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::getMsgSpeed(msgSpeed &speed_)
+errorCode lensPort::getMsgSpeed(msgSpeed &speed_)
 {
     speed_ = speed;
 
@@ -281,7 +281,7 @@ errorCodes lensPort::getMsgSpeed(msgSpeed &speed_)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
+errorCode lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
 {
     if (!msgAvailable)
         return LENS_PORT_NO_ANSWER_AVAILABLE;
@@ -295,7 +295,7 @@ errorCodes lensPort::getAnswer(uint8_t answer[], unsigned int &answerLength)
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::sendSlowMsg()
+errorCode lensPort::sendSlowMsg()
 {
     for (unsigned int i = 0; i < msgLength; i++)
     {
@@ -312,7 +312,7 @@ errorCodes lensPort::sendSlowMsg()
 }
 
 //-----------------------------------------------------------------
-errorCodes lensPort::sendFastMsg()
+errorCode lensPort::sendFastMsg()
 {
     for (unsigned int i = 0; i < msgLength; i++)
     {

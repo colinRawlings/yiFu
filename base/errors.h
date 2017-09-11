@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-enum errorCodes
+enum errorCode
 {
     SUCCESS = 0,
 
@@ -43,6 +43,6 @@ enum errorCodes
     FOCUS_MOVE_TIMEOUT
 };
 
-String errorCodeToString(errorCodes theErrorCode);
+String errorCodeToString(errorCode theErrorCode);
 
 #endif //_ERRORS_H

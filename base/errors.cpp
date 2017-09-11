@@ -1,6 +1,6 @@
 #include "errors.h"
 
-String errorCodeToString(errorCodes theErrorCode)
+String errorCodeToString(errorCode theErrorCode)
 {
     switch (theErrorCode)
     {

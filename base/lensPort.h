@@ -30,10 +30,10 @@ private:
   // debug
 
 private:
-  errorCodes _sendSlowByte(uint8_t val_MOSI, uint8_t &val_MISO);
-  errorCodes _sendFastByte(uint8_t val_MOSI, uint8_t &val_MISO);
+  errorCode _sendSlowByte(uint8_t val_MOSI, uint8_t &val_MISO);
+  errorCode _sendFastByte(uint8_t val_MOSI, uint8_t &val_MISO);
 
-  errorCodes _waitForLens(unsigned long timeout_us);
+  errorCode _waitForLens(unsigned long timeout_us);
 
   //
 
@@ -43,15 +43,15 @@ protected:
 public:
   lensPort();
 
-  errorCodes setMsg(uint8_t msg[], unsigned int msgLength_);
+  errorCode setMsg(uint8_t msg[], unsigned int msgLength_);
 
-  errorCodes sendFastMsg();
-  errorCodes sendSlowMsg();
+  errorCode sendFastMsg();
+  errorCode sendSlowMsg();
 
-  errorCodes getMsgSpeed(msgSpeed &speed);
-  errorCodes getMsgLength(unsigned int &msgLength_);
-  errorCodes getMsg(uint8_t msg[], unsigned int &msgLength_);
-  errorCodes getAnswer(uint8_t answer[], unsigned int &answerLength_);
+  errorCode getMsgSpeed(msgSpeed &speed);
+  errorCode getMsgLength(unsigned int &msgLength_);
+  errorCode getMsg(uint8_t msg[], unsigned int &msgLength_);
+  errorCode getAnswer(uint8_t answer[], unsigned int &answerLength_);
 
   // debug
 };
