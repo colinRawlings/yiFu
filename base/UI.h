@@ -7,7 +7,6 @@
 
 #include "pushSwitch.h"
 #include "LED.h"
-#include "persistentLED.h"
 
 #include "errors.h"
 #include "Arduino.h"
@@ -18,7 +17,7 @@ class UI : public UIInterface
 private:
   Stream *the_serial_port;
   lensManagerInterface *the_lens_manager;
-  persistentLED error_led;
+  LED error_led;
   LED status_led;
 
   pushSwitch set_switch;
@@ -27,10 +26,12 @@ private:
   pushSwitch plus_switch;
   pushSwitch minus_switch;
 
+  bool lensInitialised;
+
 private:
   // outputs
   void _writeHexSequenceToSerial(uint8_t sequence[], unsigned int msgLength);
-  void _printErrorCode(errorCode theErrorCode);
+  void _printErrorCode(ErrorCode theErrorCode);
   void _addHrule();
   void _addEndComm();
 
@@ -42,7 +43,7 @@ private:
   void _displayReady();
   void _displayFocalDistanceMemorySet();
 
-  void _reportError(errorCode theErrorCode);
+  void _reportError(ErrorCode theErrorCode);
   void _reportFocalLengths();
   void _reportApertureValue();
 
@@ -52,8 +53,8 @@ private:
   void _checkSwitches();
 
   // serial port commands
-  errorCode _parseSerialPortInput(lensCommand &cmd);
-  errorCode _charToNibble(char c, int &val);
+  ErrorCode _parseSerialPortInput(lensCommand &cmd);
+  ErrorCode _charToNibble(char c, int &val);
   void _emptySerialInputBuffer();
 
   // operations

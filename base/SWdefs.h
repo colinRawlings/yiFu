@@ -39,7 +39,7 @@
 // UI
 //-----------------------------------------------------------------
 
-#define ERR_TIMEOUT_US 2000000
+#define DT_DISPLAY_ERR_MS 2000
 #define MSG_BUFFER_LENGTH 20
 #define N_BLINKS_AT_END_STOP 3
 #define DT_BLINKS_AT_END_STOP_MS 200
@@ -47,7 +47,7 @@
 #define N_BLINKS_AT_FOCUS_SET 3
 #define DT_BLINKS_AT_FOCUS_SET_MS 200
 
-#define DT_BLINKS_AT_STARTUP_ERROR 200
+#define DT_BLINKS_AT_STARTUP_ERROR_MS 200
 
 //-----------------------------------------------------------------
 // focalDistanceManager

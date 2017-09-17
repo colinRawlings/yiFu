@@ -36,11 +36,11 @@ void apertureManager::setTheLensInitializer(lensInitializerInterface *the_lens_i
 // Class Definition: Private
 //-----------------------------------------------------------------
 
-errorCode apertureManager::_executeApertureCommand(apertureCommand cmd)
+ErrorCode apertureManager::_executeApertureCommand(apertureCommand cmd)
 {
 
-    errorCode err;
-    errorCode err2;
+    ErrorCode err;
+    ErrorCode err2;
 
     if (the_lens_initializer == NULL)
         return AV_LENS_INITIALIZER_UNSET;
@@ -98,9 +98,9 @@ errorCode apertureManager::_executeApertureCommand(apertureCommand cmd)
 // Class Definition: Public
 //-----------------------------------------------------------------
 
-errorCode apertureManager::openFully()
+ErrorCode apertureManager::openFully()
 {
-    if (errorCode err = _executeApertureCommand(OPEN_FULLY))
+    if (ErrorCode err = _executeApertureCommand(OPEN_FULLY))
         return err;
 
     //
@@ -110,9 +110,9 @@ errorCode apertureManager::openFully()
 }
 
 //-----------------------------------------------------------------
-errorCode apertureManager::openOneStep()
+ErrorCode apertureManager::openOneStep()
 {
-    if (errorCode err = _executeApertureCommand(OPEN_ONE_STEP))
+    if (ErrorCode err = _executeApertureCommand(OPEN_ONE_STEP))
         return err;
 
     if (apertureValueKnown)
@@ -126,9 +126,9 @@ errorCode apertureManager::openOneStep()
 }
 
 //-----------------------------------------------------------------
-errorCode apertureManager::closeOneStep()
+ErrorCode apertureManager::closeOneStep()
 {
-    if (errorCode err = _executeApertureCommand(CLOSE_ONE_STEP))
+    if (ErrorCode err = _executeApertureCommand(CLOSE_ONE_STEP))
         return err;
 
     if (apertureValueKnown)
@@ -142,7 +142,7 @@ errorCode apertureManager::closeOneStep()
 }
 
 //-----------------------------------------------------------------
-errorCode apertureManager::getApertureValue_tics(unsigned int &av_tics)
+ErrorCode apertureManager::getApertureValue_tics(unsigned int &av_tics)
 {
     av_tics = 0;
 

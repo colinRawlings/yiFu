@@ -6,19 +6,19 @@
 class focalDistanceManagerInterface
 {
 public:
-  virtual errorCode gotoMinFocalDistance() = 0;
-  virtual errorCode gotoInfFocalDistance() = 0;
+  virtual ErrorCode gotoMinFocalDistance() = 0;
+  virtual ErrorCode gotoInfFocalDistance() = 0;
 
   virtual void setFocalDistanceMemoryPlus(int focalDistance) = 0;
   virtual void setFocalDistanceMemoryMinus(int focalDistance) = 0;
 
-  virtual errorCode gotoFocalDistancePlus() = 0;
-  virtual errorCode gotoFocalDistanceMinus() = 0;
+  virtual ErrorCode gotoFocalDistancePlus() = 0;
+  virtual ErrorCode gotoFocalDistanceMinus() = 0;
 
-  virtual errorCode stepFocalDistance(int step) = 0;
-  virtual errorCode setFocalDistance(int focalDistance) = 0;
+  virtual ErrorCode stepFocalDistance(int step) = 0;
+  virtual ErrorCode setFocalDistance(int focalDistance) = 0;
 
-  virtual errorCode getFocalDistance(int &focalDistance) = 0;
+  virtual ErrorCode getFocalDistance(int &focalDistance) = 0;
 };
 
 #endif //_FOCAL_DISTANCE_MANAGER_INTERFACE_H

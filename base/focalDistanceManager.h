@@ -30,27 +30,27 @@ private:
   lensPortInterface *the_lens_port;
 
 private:
-  errorCode _waitMoveComplete();
-  errorCode _getStatus(focusStatus &status);
+  ErrorCode _waitMoveComplete();
+  ErrorCode _getStatus(focusStatus &status);
 
 public:
   focalDistanceManager();
 
   void setTheLensPort(lensPortInterface *the_lens_port_);
 
-  errorCode gotoMinFocalDistance();
-  errorCode gotoInfFocalDistance();
+  ErrorCode gotoMinFocalDistance();
+  ErrorCode gotoInfFocalDistance();
 
   void setFocalDistanceMemoryPlus(int focalDistance);
   void setFocalDistanceMemoryMinus(int focalDistance);
 
-  errorCode gotoFocalDistancePlus();
-  errorCode gotoFocalDistanceMinus();
+  ErrorCode gotoFocalDistancePlus();
+  ErrorCode gotoFocalDistanceMinus();
 
-  errorCode stepFocalDistance(int step);
-  errorCode setFocalDistance(int focalDistance);
+  ErrorCode stepFocalDistance(int step);
+  ErrorCode setFocalDistance(int focalDistance);
 
-  errorCode getFocalDistance(int &focalDistance);
+  ErrorCode getFocalDistance(int &focalDistance);
 };
 
 #endif // _FOCAL_DISTANCE_MANAGER_H

@@ -43,8 +43,8 @@ public:
   virtual focalDistanceManagerInterface *getFocalDistanceManager() = 0;
   virtual apertureManagerInterface *getApertureManager() = 0;
 
-  virtual errorCode sendLensCommand(lensCommand cmd) = 0;
-  virtual errorCode getLensConversation(lensConversation &conv) = 0;
+  virtual ErrorCode sendLensCommand(lensCommand cmd) = 0;
+  virtual ErrorCode getLensConversation(lensConversation &conv) = 0;
 };
 
 #endif //_LENS_MANAGER_INTERFACE_H

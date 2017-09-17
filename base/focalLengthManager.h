@@ -14,7 +14,7 @@ public:
   focalLengthManager();
 
   void setTheLensPort(lensPortInterface *the_lens_port);
-  errorCode getFocalLength(int &focalLength);
+  ErrorCode getFocalLength(int &focalLength);
 };
 
 #endif //_FOCAL_LENGTH_MANAGER_H

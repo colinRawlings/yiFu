@@ -53,7 +53,7 @@ void lensInitializer::_turnOffPower()
 // Class Definition: Init
 //-----------------------------------------------------------------
 
-errorCode lensInitializer::_sendCR(msgSpeed speed)
+ErrorCode lensInitializer::_sendCR(msgSpeed speed)
 {
     if (the_lens_port == NULL)
         return LENS_INIT_LENS_PORT_UNSET;
@@ -67,22 +67,22 @@ errorCode lensInitializer::_sendCR(msgSpeed speed)
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(CRmsg, CRLength))
+    if (ErrorCode err = the_lens_port->setMsg(CRmsg, CRLength))
         return err;
 
     switch (speed)
     {
     case (SLOW):
-        if (errorCode err = the_lens_port->sendSlowMsg())
+        if (ErrorCode err = the_lens_port->sendSlowMsg())
             return err;
     case (FAST):
-        if (errorCode err = the_lens_port->sendFastMsg())
+        if (ErrorCode err = the_lens_port->sendFastMsg())
             return err;
     }
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(CRAnswer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(CRAnswer, answerLength))
         return err;
 
     if (answerLength != CRLength)
@@ -95,7 +95,7 @@ errorCode lensInitializer::_sendCR(msgSpeed speed)
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::_activateLens()
+ErrorCode lensInitializer::_activateLens()
 {
     if (the_lens_port == NULL)
         return LENS_INIT_LENS_PORT_UNSET;
@@ -115,15 +115,15 @@ errorCode lensInitializer::_activateLens()
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
     FLmin_mm = answer[4];
@@ -133,7 +133,7 @@ errorCode lensInitializer::_activateLens()
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::_activateISControl()
+ErrorCode lensInitializer::_activateISControl()
 {
     if (the_lens_port == NULL)
         return LENS_INIT_LENS_PORT_UNSET;
@@ -159,22 +159,22 @@ errorCode lensInitializer::_activateISControl()
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::_activateTelePhotoMFControl()
+ErrorCode lensInitializer::_activateTelePhotoMFControl()
 {
     if (the_lens_port == NULL)
         return LENS_INIT_LENS_PORT_UNSET;
@@ -200,22 +200,22 @@ errorCode lensInitializer::_activateTelePhotoMFControl()
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::_activatePrimeMFControl()
+ErrorCode lensInitializer::_activatePrimeMFControl()
 {
     if (the_lens_port == NULL)
         return LENS_INIT_LENS_PORT_UNSET;
@@ -241,37 +241,37 @@ errorCode lensInitializer::_activatePrimeMFControl()
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::_activateLensControls()
+ErrorCode lensInitializer::_activateLensControls()
 {
     if (FLmax_mm == 0 || FLmin_mm == 0)
         return LENS_INIT_BAD_FL;
 
     if (FLmin_mm == FLmax_mm)
     {
-        if (errorCode err = _activatePrimeMFControl())
+        if (ErrorCode err = _activatePrimeMFControl())
             return err;
     }
     else
     {
-        if (errorCode err = _activateISControl())
+        if (ErrorCode err = _activateISControl())
             return err;
 
-        if (errorCode err = _activateTelePhotoMFControl())
+        if (ErrorCode err = _activateTelePhotoMFControl())
             return err;
     }
 
@@ -286,10 +286,10 @@ void lensInitializer::getLensFocalLengths(int &minFocalLength_mm, int &maxFocalL
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::initLens()
+ErrorCode lensInitializer::initLens()
 {
     unsigned int n = 0;
-    errorCode err;
+    ErrorCode err;
 
     _turnOnPower();
 
@@ -318,7 +318,7 @@ errorCode lensInitializer::initLens()
 }
 
 //-----------------------------------------------------------------
-errorCode lensInitializer::resetLens()
+ErrorCode lensInitializer::resetLens()
 {
 
     _turnOffPower();
@@ -329,7 +329,7 @@ errorCode lensInitializer::resetLens()
 
     //
 
-    if (errorCode err = initLens())
+    if (ErrorCode err = initLens())
         return err;
 
     return SUCCESS;

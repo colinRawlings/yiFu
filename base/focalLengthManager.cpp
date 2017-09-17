@@ -24,7 +24,7 @@ void focalLengthManager::setTheLensPort(lensPortInterface *the_lens_port_)
 // Class Definition: Operations
 //-----------------------------------------------------------------
 
-errorCode focalLengthManager::getFocalLength(int &focalLength)
+ErrorCode focalLengthManager::getFocalLength(int &focalLength)
 {
     focalLength = 0;
 
@@ -47,15 +47,15 @@ errorCode focalLengthManager::getFocalLength(int &focalLength)
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
     focalLength = convertBytesToInt(answer[2], answer[1]);

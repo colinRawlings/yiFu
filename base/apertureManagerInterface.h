@@ -6,11 +6,11 @@
 class apertureManagerInterface
 {
 public:
-  virtual errorCode openFully() = 0;
-  virtual errorCode openOneStep() = 0;
-  virtual errorCode closeOneStep() = 0;
+  virtual ErrorCode openFully() = 0;
+  virtual ErrorCode openOneStep() = 0;
+  virtual ErrorCode closeOneStep() = 0;
 
-  virtual errorCode getApertureValue_tics(unsigned int &av_tics) = 0;
+  virtual ErrorCode getApertureValue_tics(unsigned int &av_tics) = 0;
 };
 
 #endif //_APERTURE_MANAGER_INTERFACE_H

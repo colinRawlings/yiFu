@@ -34,7 +34,7 @@ void focalDistanceManager::setTheLensPort(lensPortInterface *the_lens_port_)
 // Class Definition: Core
 //-----------------------------------------------------------------
 
-errorCode focalDistanceManager::_waitMoveComplete()
+ErrorCode focalDistanceManager::_waitMoveComplete()
 {
 
     unsigned long T0_us = micros(); // start time for move watchdog
@@ -48,7 +48,7 @@ errorCode focalDistanceManager::_waitMoveComplete()
         if (dT_us > timeout_us)
             return FOCUS_MOVE_TIMEOUT;
 
-        if (errorCode err = _getStatus(theStatus))
+        if (ErrorCode err = _getStatus(theStatus))
             return err;
 
         if (theStatus.focusMotorMoving == false)
@@ -59,7 +59,7 @@ errorCode focalDistanceManager::_waitMoveComplete()
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::_getStatus(focusStatus &theStatus)
+ErrorCode focalDistanceManager::_getStatus(focusStatus &theStatus)
 {
     if (the_lens_port == NULL)
         return FD_MAN_LENS_PORT_UNSET;
@@ -79,34 +79,34 @@ errorCode focalDistanceManager::_getStatus(focusStatus &theStatus)
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
-    if (errorCode err = bitOfByte(answer[2], FOCUS_STATUS_AUTO_FOCUS_BIT, theStatus.autoFocusMode))
+    if (ErrorCode err = bitOfByte(answer[2], FOCUS_STATUS_AUTO_FOCUS_BIT, theStatus.autoFocusMode))
         return err;
 
-    if (errorCode err = bitOfByte(answer[2], FOCUS_STATUS_FOCUS_MOVE_BIT, theStatus.focusMotorMoving))
+    if (ErrorCode err = bitOfByte(answer[2], FOCUS_STATUS_FOCUS_MOVE_BIT, theStatus.focusMotorMoving))
         return err;
 
-    if (errorCode err = bitOfByte(answer[2], FOCUS_STATUS_FOCUS_ACCEL_BIT, theStatus.focusMotorAccelerating))
+    if (ErrorCode err = bitOfByte(answer[2], FOCUS_STATUS_FOCUS_ACCEL_BIT, theStatus.focusMotorAccelerating))
         return err;
 
-    if (errorCode err = bitOfByte(answer[2], FOCUS_STATUS_AT_END_STOP_BIT, theStatus.focusMotorAtEndStop))
+    if (ErrorCode err = bitOfByte(answer[2], FOCUS_STATUS_AT_END_STOP_BIT, theStatus.focusMotorAtEndStop))
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::gotoMinFocalDistance()
+ErrorCode focalDistanceManager::gotoMinFocalDistance()
 {
     if (the_lens_port == NULL)
         return FD_MAN_LENS_PORT_UNSET;
@@ -127,25 +127,25 @@ errorCode focalDistanceManager::gotoMinFocalDistance()
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
-    if (errorCode err = _waitMoveComplete())
+    if (ErrorCode err = _waitMoveComplete())
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::gotoInfFocalDistance()
+ErrorCode focalDistanceManager::gotoInfFocalDistance()
 {
     if (the_lens_port == NULL)
         return FD_MAN_LENS_PORT_UNSET;
@@ -166,25 +166,25 @@ errorCode focalDistanceManager::gotoInfFocalDistance()
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
-    if (errorCode err = _waitMoveComplete())
+    if (ErrorCode err = _waitMoveComplete())
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::getFocalDistance(int &focalDistance)
+ErrorCode focalDistanceManager::getFocalDistance(int &focalDistance)
 {
     focalDistance = 0;
 
@@ -208,15 +208,15 @@ errorCode focalDistanceManager::getFocalDistance(int &focalDistance)
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
     focalDistance = convertBytesToInt(answer[2], answer[1]);
@@ -225,7 +225,7 @@ errorCode focalDistanceManager::getFocalDistance(int &focalDistance)
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::stepFocalDistance(int step)
+ErrorCode focalDistanceManager::stepFocalDistance(int step)
 {
     if (the_lens_port == NULL)
         return FD_MAN_LENS_PORT_UNSET;
@@ -250,34 +250,34 @@ errorCode focalDistanceManager::stepFocalDistance(int step)
 
     //
 
-    if (errorCode err = the_lens_port->setMsg(msg, msgLength))
+    if (ErrorCode err = the_lens_port->setMsg(msg, msgLength))
         return err;
 
-    if (errorCode err = the_lens_port->sendFastMsg())
+    if (ErrorCode err = the_lens_port->sendFastMsg())
         return err;
 
     //
 
-    if (errorCode err = the_lens_port->getAnswer(answer, answerLength))
+    if (ErrorCode err = the_lens_port->getAnswer(answer, answerLength))
         return err;
 
-    if (errorCode err = _waitMoveComplete())
+    if (ErrorCode err = _waitMoveComplete())
         return err;
 
     return SUCCESS;
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::setFocalDistance(int newFocalDistance)
+ErrorCode focalDistanceManager::setFocalDistance(int newFocalDistance)
 {
     int currentFocalDistance;
 
-    if (errorCode err = getFocalDistance(currentFocalDistance))
+    if (ErrorCode err = getFocalDistance(currentFocalDistance))
         return err;
 
     int step = newFocalDistance - currentFocalDistance;
 
-    if (errorCode err = stepFocalDistance(step))
+    if (ErrorCode err = stepFocalDistance(step))
         return err;
 
     return SUCCESS;
@@ -301,31 +301,31 @@ void focalDistanceManager::setFocalDistanceMemoryMinus(int focalDistance)
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::gotoFocalDistancePlus()
+ErrorCode focalDistanceManager::gotoFocalDistancePlus()
 {
     if (focalDistanceMemoryPlusSet)
     {
-        if (errorCode err = setFocalDistance(focalDistanceMemoryPlus))
+        if (ErrorCode err = setFocalDistance(focalDistanceMemoryPlus))
             return err;
     }
     else
     {
-        if (errorCode err = gotoInfFocalDistance())
+        if (ErrorCode err = gotoInfFocalDistance())
             return err;
     }
 }
 
 //-----------------------------------------------------------------
-errorCode focalDistanceManager::gotoFocalDistanceMinus()
+ErrorCode focalDistanceManager::gotoFocalDistanceMinus()
 {
     if (focalDistanceMemoryMinusSet)
     {
-        if (errorCode err = setFocalDistance(focalDistanceMemoryMinus))
+        if (ErrorCode err = setFocalDistance(focalDistanceMemoryMinus))
             return err;
     }
     else
     {
-        if (errorCode err = gotoMinFocalDistance())
+        if (ErrorCode err = gotoMinFocalDistance())
             return err;
     }
 }

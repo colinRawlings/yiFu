@@ -22,20 +22,20 @@ private:
   void _turnOnPower();
   void _turnOffPower();
 
-  errorCode _sendCR(msgSpeed speed);
-  errorCode _activateISControl();
-  errorCode _activateTelePhotoMFControl();
-  errorCode _activatePrimeMFControl();
-  errorCode _activateLensControls();
-  errorCode _activateLens();
+  ErrorCode _sendCR(msgSpeed speed);
+  ErrorCode _activateISControl();
+  ErrorCode _activateTelePhotoMFControl();
+  ErrorCode _activatePrimeMFControl();
+  ErrorCode _activateLensControls();
+  ErrorCode _activateLens();
 
 public:
   lensInitializer();
 
   void setTheLensPort(lensPortInterface *the_lens_port_);
 
-  errorCode initLens();
-  errorCode resetLens();
+  ErrorCode initLens();
+  ErrorCode resetLens();
 
   void getLensFocalLengths(int &minFocalLength_mm, int &maxFocalLength_mm);
 };

@@ -39,8 +39,8 @@ public:
   focalDistanceManagerInterface *getFocalDistanceManager();
   apertureManagerInterface *getApertureManager();
 
-  errorCode sendLensCommand(lensCommand cmd);
-  errorCode getLensConversation(lensConversation &conv);
+  ErrorCode sendLensCommand(lensCommand cmd);
+  ErrorCode getLensConversation(lensConversation &conv);
 };
 
 #endif // _LENS_MANAGER_H
