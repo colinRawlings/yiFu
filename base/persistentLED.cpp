@@ -1,6 +1,9 @@
 #include "persistentLED.h"
 
 //-----------------------------------------------------------------
+// Class definition
+//-----------------------------------------------------------------
+
 persistentLED::persistentLED(uint8_t pin_, bool invertedOutput_, long activatedDuration_us_)
     : LED(pin_, invertedOutput_)
 {
